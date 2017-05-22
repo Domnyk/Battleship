@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DOMNYK.iml" filepath="$PROJECT_DIR$/.idea/modules/DOMNYK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DOMNYK_main.iml" filepath="$PROJECT_DIR$/.idea/modules/DOMNYK_main.iml" group="DOMNYK" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DOMNYK_test.iml" filepath="$PROJECT_DIR$/.idea/modules/DOMNYK_test.iml" group="DOMNYK" />
+    </modules>
+  </component>
+</project>
