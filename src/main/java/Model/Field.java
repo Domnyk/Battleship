@@ -16,7 +16,17 @@ public class Field {
         return state;
     }
 
-    public void setState(State state) {
-        this.state = state;
+    public void setState(State newState) {
+        this.state = newState;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Field field = (Field) o;
+
+        return getState() == field.getState();
     }
 }
