@@ -2,9 +2,15 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DOMNYK.iml" filepath="$PROJECT_DIR$/.idea/modules/DOMNYK.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DOMNYK_main.iml" filepath="$PROJECT_DIR$/.idea/modules/DOMNYK_main.iml" group="DOMNYK" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/DOMNYK_test.iml" filepath="$PROJECT_DIR$/.idea/modules/DOMNYK_test.iml" group="DOMNYK" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Battleship.iml" filepath="$PROJECT_DIR$/.idea/modules/Battleship.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Battleship_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Battleship_main.iml" group="Battleship" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Battleship_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Battleship_test.iml" group="Battleship" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Client/Client.iml" filepath="$PROJECT_DIR$/.idea/modules/Client/Client.iml" group="Client" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Client/Client_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Client/Client_main.iml" group="Client" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Client/Client_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Client/Client_test.iml" group="Client" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Server/Server.iml" filepath="$PROJECT_DIR$/.idea/modules/Server/Server.iml" group="Server" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Server/Server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Server/Server_main.iml" group="Server" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Server/Server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Server/Server_test.iml" group="Server" />
     </modules>
   </component>
 </project>

@@ -8,8 +8,8 @@ public class Field {
         setState(State.EMPTY);
     }
 
-    Field(State state) {
-        setState(state);
+    Field(State newState) {
+        setState(newState);
     }
 
     public State getState() {
