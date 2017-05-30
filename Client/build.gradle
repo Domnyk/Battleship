@@ -1,1 +1,24 @@
-mainClassName = "Main"
+buildscript {
+    dependencies {
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+    }
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+
+    }
+}
+apply plugin: 'java'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+apply plugin: 'javafx-gradle-plugin'
+
+
+jfx {
+    mainClass = 'Main'
+}
