@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Connection extends Thread {
+    private String id;
     private Socket socket;
     private BufferedReader in;
     private PrintWriter out;

@@ -12,6 +12,8 @@
       <module name="Protocol_test" target="1.8" />
       <module name="Server_main" target="1.8" />
       <module name="Server_test" target="1.8" />
+      <module name="Shared_main" target="1.8" />
+      <module name="Shared_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

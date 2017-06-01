@@ -11,6 +11,9 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Server/Server.iml" filepath="$PROJECT_DIR$/.idea/modules/Server/Server.iml" group="Server" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Server/Server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Server/Server_main.iml" group="Server" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Server/Server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Server/Server_test.iml" group="Server" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Shared/Shared.iml" filepath="$PROJECT_DIR$/.idea/modules/Shared/Shared.iml" group="Shared" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Shared/Shared_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Shared/Shared_main.iml" group="Shared" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Shared/Shared_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Shared/Shared_test.iml" group="Shared" />
     </modules>
   </component>
 </project>

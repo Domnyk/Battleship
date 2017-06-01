@@ -5,9 +5,12 @@ import java.net.Socket;
 
 public class ClientsListener extends Thread {
     private GameServer gameServer;
+    private int numOfClientsConnected;
+
 
     public ClientsListener(GameServer gameServer) {
         this.gameServer = gameServer;
+        numOfClientsConnected = 0;
     }
 
     @Override
@@ -21,6 +24,12 @@ public class ClientsListener extends Thread {
                 Connection connection = new Connection(clientSocket);
                 gameServer.getConnections().add(connection);
                 connection.start();
+                ++numOfClientsConnected;
+
+                if(numOfClientsConnected == 2) {
+                    System.out.println("ClientListener thread is ending its execution");
+                    break;
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
