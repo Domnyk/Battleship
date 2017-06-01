@@ -1,32 +1,57 @@
 package Network;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Connection extends Thread {
-    private Socket client = null;
-    private PrintWriter out;
+    private Socket socket;
     private BufferedReader in;
+    private PrintWriter out;
+    public LinkedList<String> messagesQueue;
 
-    public Connection(Socket client) {
-        this.client = client;
-
+    public Connection(Socket socket) {
         try {
-            out = new PrintWriter(client.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        messagesQueue = new LinkedList<String>();
+        this.socket = socket;
+    }
+
+    public void close() {
+        try {
+            socket.close();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
 
-        out.println("HELLO FROM THE SERVER YOU MOTHERFUCKER");
     }
 
     @Override
     public void run() {
+        String s;
+        try {
+            while((s = in.readLine()) != null ) {
+                messagesQueue.add(s);
+            }
+            out.close();
+            in.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        try {
+            socket.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

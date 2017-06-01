@@ -1,1 +1,7 @@
 mainClassName = "Main"
+
+run {
+    if ( project.hasProperty('port')) {
+        args Eval.me(port)
+    }
+}

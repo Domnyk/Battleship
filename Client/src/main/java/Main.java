@@ -1,4 +1,8 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.*;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -47,7 +51,22 @@ public class Main extends Application {
         return primaryStage;
     }
 
+
     public static void main(String[] args) {
-        launch(args);
+        //launch(args);
+        try (Socket socket = new Socket("localhost", 4444);
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))
+        ) {
+           String fromServer;
+
+           while((fromServer = in.readLine()) != null ) {
+               System.out.println("Server: " + fromServer);
+           }
+
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
