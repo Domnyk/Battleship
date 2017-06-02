@@ -69,3 +69,6 @@ fabric.properties
 Server/build/
 Client/build/
 build/
+
+# Logs
+Server/Server.log
