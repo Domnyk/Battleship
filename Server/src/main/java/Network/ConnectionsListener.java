@@ -25,10 +25,16 @@ public class ConnectionsListener extends Thread {
             Socket clientSocket;
             try {
                 clientSocket = gameServer.serverSocket.accept();
-                logger.info("Client connected");
+                logger.info("Client connection accepted");
 
                 Connection connection = new Connection(clientSocket);
                 gameServer.getConnections().add(connection);
+                
+                connection.setConnectionId(numOfClientsConnected);
+                connection.sendData(String.valueOf(numOfClientsConnected));
+                logger.info("Id of connection object was set to " + numOfClientsConnected);
+                logger.info("Same id was send to connection object at the user application");
+
                 connection.start();
                 ++numOfClientsConnected;
 

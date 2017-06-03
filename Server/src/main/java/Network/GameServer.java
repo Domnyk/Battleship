@@ -30,7 +30,7 @@ public class GameServer {
         }
 
         connections = new ArrayList<Connection>();
-        messagesListener = new MessagesListener();
+        messagesListener = new MessagesListener(this);
         // Rozpocznij watek messagesListener
 
         connectionsListener = new ConnectionsListener(this);
@@ -42,14 +42,19 @@ public class GameServer {
 
         try {
             for (Connection connection : connections) {
-                // Zamknij socket
-                // Przerwij watek connection
+                connection.close();
+                logger.info("Connection closed");
+
+                connection.interrupt();
+                logger.info("Connection thread interupted");
             }
             connections.clear();
             serverSocket.close();
+            logger.info("GameServer stopped");
         }
         catch (IOException e) {
             e.printStackTrace();
+            logger.error("IOException during GameServer closing");
         }
     }
 
