@@ -1,82 +1,88 @@
 package Protocol;
 
-public class Msg {
-    private int msgType;
-    private int playerID;
-    private String msgContent;
+import java.io.Serializable;
 
-    /**
-     * Constructor for creating Msg objects from received messages. Useful in MessagesListener class
-     *
-     * @param receivedMsg
-     */
-    public Msg(String receivedMsg) {
-        int delimiter1 = receivedMsg.indexOf('|');
-        int delimiter2 = receivedMsg.indexOf('|', delimiter1);
+public class Msg implements Serializable {
+    private MsgType msgType;
+    private Integer playerID, x, y;
+    private FieldState fieldState;
 
-        int msgType = Integer.parseInt(receivedMsg.substring(0, delimiter1));
-        int playerID = Integer.parseInt(receivedMsg.substring(delimiter1 + 1, delimiter2));
-        String msgContent = receivedMsg.substring(delimiter2 + 1);
-
-        setMsgType(msgType);
-        setPlayerID(playerID);
-        setMsgContent(msgContent);
-
-    }
-
-    /**
-     * Constructor for creating direct messages i.e sent with sendMessage method from MessagesHandler class
-     *
-     * @param msgType
-     * @param playerID
-     * @param msgContent
-     */
-    public Msg(int msgType, int playerID, String msgContent) {
-        this.msgType = msgType;
-        this.playerID = playerID;
-        this.msgContent = msgContent;
-    }
-
-    /**
-     * Constructor for creating broadcast messages hence no playerID in argument list
-     *
-     * @param msgType
-     * @param msgContent
-     */
-    public Msg(int msgType, String msgContent) {
-        this.msgType = msgType;
-        this.msgContent = msgContent;
-
-        this.playerID = -1;
-    }
-
-    public String getMsgToSend() {
-        return (msgType + '|' + playerID + '|' + msgContent);
-    }
-
-    public int getMsgType() {
+    public MsgType getMsgType() {
         return msgType;
     }
 
-    public void setMsgType(int msgType) {
+    public void setMsgType(MsgType msgType) {
         this.msgType = msgType;
     }
 
-    public int getPlayerID() {
+    public Integer getPlayerID() {
         return playerID;
     }
 
-    public void setPlayerID(int playerID) {
+    public void setPlayerID(Integer playerID) {
         this.playerID = playerID;
     }
 
-    public String getMsgContent() {
-        return msgContent;
+    public Integer getX() {
+        return x;
     }
 
-    public void setMsgContent(String msgContent) {
-        this.msgContent = msgContent;
+    public void setX(Integer x) {
+        this.x = x;
     }
 
+    public Integer getY() {
+        return y;
+    }
 
+    public void setY(Integer y) {
+        this.y = y;
+    }
+
+    public FieldState getFieldState() {
+        return fieldState;
+    }
+
+    public void setFieldState(FieldState fieldState) {
+        this.fieldState = fieldState;
+    }
+
+    /**
+     * @param msgType Type of message from MsgType
+     * @param playerID
+     * @param x x coordinate of the field on the map
+     * @param y y coordinate of the field on the map
+     * @param fieldState new state of the field
+     */
+    public Msg(MsgType msgType, Integer playerID, Integer x, Integer y, FieldState fieldState) {
+        this.msgType = msgType;
+        this.playerID = playerID;
+        this.x = x;
+        this.y = y;
+        this.fieldState = fieldState;
+    }
+
+    /**
+     * Constructor for most messages
+     * @param msgType
+     * @param playerID
+     */
+    public Msg(MsgType msgType, int playerID) {
+        this(msgType, playerID, null, null, null);
+    }
+
+    /**
+     * Constructor for message from client of type SHOT_PERFORMED
+     * @param msgType
+     * @param playerID
+     * @param x
+     * @param y
+     */
+    public Msg(MsgType msgType, Integer playerID, Integer x, Integer y) {
+        this(msgType, playerID, x, y, null);
+    }
+
+    public Msg() {
+        this(null, null, null, null, null);
+    }
 }

@@ -10,8 +10,10 @@ buildscript {
     }
 }
 
-apply plugin: 'javafx-gradle-plugin'
+//apply plugin: 'javafx-gradle-plugin'
 
-jfx {
-    mainClass = 'Main'
-}
+//jfx {
+//    mainClass = 'Main'
+//}
+
+mainClassName = 'Main'

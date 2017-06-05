@@ -1,16 +1,16 @@
-package Model;
+package Protocol;
 
 /**
  * Enum type which describes state of a field
  */
-public enum State {
+public enum FieldState {
     /**
      * Empty field
      */
     EMPTY,
 
     /**
-     * Field on which a ship has been placed
+     * Field2 on which a ship has been placed
      */
     SHIP,
 

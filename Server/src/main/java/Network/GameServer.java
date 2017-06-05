@@ -2,63 +2,64 @@ package Network;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import Model.GameServerState;
+import Protocol.Msg;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
-public class GameServer {
-    private int port;
-    private static final Logger logger = LogManager.getLogger("Server");
-    public ServerSocket serverSocket;
-    private ArrayList<Connection> connections;
-    private MessagesListener messagesListener;
-    private ConnectionsListener connectionsListener;
+public class GameServer extends Thread {
+        private int port;
+        private static final Logger logger = LogManager.getLogger("Server");
+        private ServerSocket serverSocket;
+        private ConcurrentLinkedQueue<Msg> gameMessages;
+        private ConcurrentLinkedQueue<ConnectionThread> connections;
+        private GameServerState gameServerState;
 
+    public GameServerState getGameServerState() {
+        return gameServerState;
+    }
+
+    public void setGameServerState(GameServerState gameServerState) {
+        this.gameServerState = gameServerState;
+    }
 
     public GameServer(int portNumber) {
         this.port = portNumber;
+        gameMessages = new ConcurrentLinkedQueue<Msg>();
+        connections = new ConcurrentLinkedQueue<ConnectionThread>();
+        gameServerState = GameServerState.INIT_STATE;
+
         logger.info("GameServer object created");
     }
 
     public void start() {
-        try {
-            serverSocket = new ServerSocket(port);
-            logger.info("Socket server has started");
-        }
-        catch (IOException e) {
-            logger.fatal("IOException during server socket creation");
-        }
-
-        connections = new ArrayList<Connection>();
-        messagesListener = new MessagesListener(this);
-        // Rozpocznij watek messagesListener
-
-        connectionsListener = new ConnectionsListener(this);
-        connectionsListener.start();
+        this.setName("GameServer");
+        this.startConnectionsListener();
+        this.startServer();
     }
 
-    public void stop() {
-        connectionsListener.interrupt();
+    public void startConnectionsListener() {
+        new ConnectionsHandler(gameMessages, connections, gameServerState).start();
+    }
 
-        try {
-            for (Connection connection : connections) {
-                connection.close();
-                logger.info("Connection closed");
+    public void startServer() {
+        // Klasa do zarzadzania wiadomosciami
+        logger.info("Server listens on port: " + port);
 
-                connection.interrupt();
-                logger.info("Connection thread interupted");
+
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
+            Socket clientSocket;
+            this.serverSocket  = serverSocket;
+            while((clientSocket = serverSocket.accept()) != null ) {
+                ConnectionThread connectionThread = new ConnectionThread(clientSocket, gameMessages);
+                connectionThread.start();
+                connections.add(connectionThread);
             }
-            connections.clear();
-            serverSocket.close();
-            logger.info("GameServer stopped");
         }
         catch (IOException e) {
-            e.printStackTrace();
-            logger.error("IOException during GameServer closing");
+            logger.info(e.getMessage());
         }
-    }
-
-    public ArrayList<Connection> getConnections() {
-        return connections;
     }
 }

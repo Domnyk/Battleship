@@ -1,5 +1,7 @@
 package Model;
 
+import Protocol.FieldState;
+
 import java.util.Arrays;
 
 /**
@@ -7,32 +9,32 @@ import java.util.Arrays;
  * Represents one player's map
  */
 public class Map {
-    private Field[][] grid;
+    private FieldState[][] grid;
 
     Map() {
-        grid = new Field[10][10];
+        grid = new FieldState[10][10];
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                grid[i][j] = new Field();
+                grid[i][j] = FieldState.EMPTY;
             }
         }
     }
 
-    public Field[][] getGrid() {
+    public FieldState[][] getGrid() {
         return grid;
     }
 
-    public void setGrid(Field[][] newGrid) {
+    public void setGrid(FieldState[][] newGrid) {
         this.grid = newGrid;
     }
 
-    public Field getField(int a, int b) {
+    public FieldState getFieldState(int a, int b) {
         return grid[a][b];
     }
 
-    public void setField(int a, int b, State newState) {
-        grid[a][b].setState(newState);
+    public void setFieldState(int a, int b, FieldState newFieldState) {
+        grid[a][b] = newFieldState;
     }
 
     @Override

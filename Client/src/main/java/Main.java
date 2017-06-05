@@ -1,71 +1,35 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.*;
+import Protocol.Msg;
+import Protocol.MsgType;
 
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
-
-public class Main extends Application {
-
-    private Stage primaryStage;
-    private BorderPane rootLayout;
-
-    @Override
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        this.primaryStage.setTitle("AddressApp");
-
-        initRootLayout();
-    }
-
-    /**
-     * Initializes the root layout.
-     */
-    public void initRootLayout() {
-        try {
-            // Load root layout from fxml file.
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Main.class.getResource("Ships.fxml"));
-            rootLayout = (BorderPane) loader.load();
-
-            // Show the scene containing the root layout.
-            Scene scene = new Scene(rootLayout);
-            primaryStage.setScene(scene);
-            primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Returns the main stage.
-     * @return
-     */
-    public Stage getPrimaryStage() {
-        return primaryStage;
-    }
-
-
+public class Main {
     public static void main(String[] args) {
-        //launch(args);
-        try (Socket socket = new Socket("localhost", 4444);
-             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))
-        ) {
-           String fromServer;
+        int id = -1;
 
-           while((fromServer = in.readLine()) != null ) {
-               System.out.println("Server: " + fromServer);
+        try (Socket socket = new Socket("localhost", 4444);
+             ObjectOutputStream toServer = new ObjectOutputStream(socket.getOutputStream());
+             ObjectInputStream fromServer = new ObjectInputStream(socket.getInputStream());
+        ) {
+           Msg msgFromServer;
+           boolean isFirst = true;
+
+           System.out.println("Test");
+
+           while((msgFromServer = (Msg) fromServer.readObject()) != null ) {
+               System.out.println("Received message of type " + msgFromServer.getMsgType());
+
+               switch (msgFromServer.getMsgType()) {
+                   case SET_ID:
+                       id = msgFromServer.getPlayerID();
+                       System.out.println("My ID is: " + id);
+                       toServer.writeObject(new Msg(MsgType.ESTABLISH_CONNECTION, id));
+                       break;
+               }
            }
 
         }
-        catch (IOException e) {
+        catch (Exception e) {
             e.printStackTrace();
         }
     }
