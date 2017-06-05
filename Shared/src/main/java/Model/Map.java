@@ -1,17 +1,15 @@
 package Model;
 
-import Protocol.FieldState;
-
 import java.util.Arrays;
 
 /**
  * Map
- * Represents one player's map
+ * Represents one Player's map
  */
 public class Map {
     private FieldState[][] grid;
 
-    Map() {
+    public Map() {
         grid = new FieldState[10][10];
 
         for (int i = 0; i < 10; i++) {
@@ -35,6 +33,18 @@ public class Map {
 
     public void setFieldState(int a, int b, FieldState newFieldState) {
         grid[a][b] = newFieldState;
+    }
+
+    public int countFields(FieldState fieldState) {
+        int result = 0;
+        for (FieldState[] fsRow: grid) {
+            for (FieldState fs: fsRow) {
+                if( fs == fieldState )
+                    ++result;
+            }
+        }
+
+        return result;
     }
 
     @Override

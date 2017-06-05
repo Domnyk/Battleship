@@ -2,32 +2,32 @@ package Model;
 
 import Protocol.PlayerState;
 
-public class player {
-    Map player, enemy;
+public class Player {
+    Map playerMap, enemyMap;
     Integer playerId;
     PlayerState playerState;
 
-    public player(Map player, Map enemy, Integer playerId, PlayerState playerState) {
-        this.player = player;
-        this.enemy = enemy;
+    public Player(Map playerMap, Map enemyMap, Integer playerId, PlayerState playerState) {
+        this.playerMap = playerMap;
+        this.enemyMap = enemyMap;
         this.playerId = playerId;
         this.playerState = playerState;
     }
 
-    public Map getPlayer() {
-        return player;
+    public Map getPlayerMap() {
+        return playerMap;
     }
 
-    public void setPlayer(Map player) {
-        this.player = player;
+    public void setPlayerMap(Map playerMap) {
+        this.playerMap = playerMap;
     }
 
-    public Map getEnemy() {
-        return enemy;
+    public Map getEnemyMap() {
+        return enemyMap;
     }
 
-    public void setEnemy(Map enemy) {
-        this.enemy = enemy;
+    public void setEnemyMap(Map enemyMap) {
+        this.enemyMap = enemyMap;
     }
 
     public Integer getPlayerId() {

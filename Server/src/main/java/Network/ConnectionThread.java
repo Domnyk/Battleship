@@ -2,7 +2,6 @@ package Network;
 
 import java.io.*;
 import java.net.*;
-import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import Protocol.MsgType;
@@ -11,14 +10,15 @@ import org.apache.logging.log4j.LogManager;
 import Protocol.Msg;
 
 public class ConnectionThread extends Thread {
+    private int id;
     private ObjectOutputStream toClient;
     private ObjectInputStream fromClient;
     private ConcurrentLinkedQueue<Msg> gameMessages;
 
     private static final Logger logger = LogManager.getLogger("Server");
 
-    public ConnectionThread(Socket clientSocket, ConcurrentLinkedQueue<Msg> gameMessages) {
-        //this.clientSocket = clientSocket;
+    public ConnectionThread(int id, Socket clientSocket, ConcurrentLinkedQueue<Msg> gameMessages) {
+        this.id = id;
         this.gameMessages = gameMessages;
 
         try {
@@ -43,7 +43,7 @@ public class ConnectionThread extends Thread {
     public void run() {
         logger.info("Thread started");
 
-        write(new Msg(MsgType.SET_ID, (int)this.getId()));
+        write(new Msg(MsgType.SET_ID, id));
 
         try {
             Msg msgFromClient, msgToClient;

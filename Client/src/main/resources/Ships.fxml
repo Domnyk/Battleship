@@ -89,7 +89,7 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
             </GridPane>
-            <Label alignment="CENTER" contentDisplay="TEXT_ONLY" prefHeight="40.0" prefWidth="100.0" text="The enemy" textAlignment="CENTER" textFill="#ff2b00" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="30.0">
+            <Label alignment="CENTER" contentDisplay="TEXT_ONLY" prefHeight="40.0" prefWidth="100.0" text="The enemyMap" textAlignment="CENTER" textFill="#ff2b00" AnchorPane.leftAnchor="70.0" AnchorPane.rightAnchor="70.0" AnchorPane.topAnchor="30.0">
                <font>
                   <Font name="Arial" size="30.0" />
                </font>

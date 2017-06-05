@@ -1,4 +1,4 @@
-package Protocol;
+package Model;
 
 /**
  * Enum type which describes state of a field

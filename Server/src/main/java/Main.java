@@ -16,7 +16,6 @@ public class Main {
 
     public static void main(String[] args) {
         int portNumber = Integer.parseInt(args[0]);
-        logger.info("Entry point of server");
 
         GameServer gameServer = new GameServer(portNumber);
         gameServer.start();

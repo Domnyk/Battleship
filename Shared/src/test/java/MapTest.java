@@ -1,10 +1,8 @@
-package Model;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import Protocol.FieldState;
+import Model.*;
 import org.junit.Test;
 
 public class MapTest {
@@ -74,5 +72,22 @@ public class MapTest {
         assertEquals(same1, same1);
         assertEquals(same1, same2);
         assertNotEquals(same1, diff);
+    }
+
+    @Test
+    public void countFieldsTest() {
+        Map map1 = new Map();
+
+        map1.setFieldState(0, 0, FieldState.SHIP);
+        map1.setFieldState(0, 1, FieldState.SHIP);
+        map1.setFieldState(0, 2, FieldState.SHOTED);
+
+        int countShip = map1.countFields(FieldState.SHIP);
+        int countShoted = map1.countFields(FieldState.SHOTED);
+        int countEmpty = map1.countFields(FieldState.EMPTY);
+
+        assertEquals(countShip, 2);
+        assertEquals(countShoted, 1);
+        assertEquals(countEmpty, 97);
     }
 }

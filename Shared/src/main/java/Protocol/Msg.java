@@ -1,10 +1,13 @@
 package Protocol;
 
+import Model.FieldState;
+
 import java.io.Serializable;
 
 public class Msg implements Serializable {
     private MsgType msgType;
     private Integer playerID, x, y;
+    private Object dataObj;
     private FieldState fieldState;
 
     public MsgType getMsgType() {
@@ -47,19 +50,23 @@ public class Msg implements Serializable {
         this.fieldState = fieldState;
     }
 
+    public Object getDataObj() {
+        return dataObj;
+    }
+
+    public void setDataObj(Object dataObj) {
+        this.dataObj = dataObj;
+    }
+
     /**
      * @param msgType Type of message from MsgType
      * @param playerID
-     * @param x x coordinate of the field on the map
-     * @param y y coordinate of the field on the map
-     * @param fieldState new state of the field
+     * @param dataObj Contains information relevant to type of message
      */
-    public Msg(MsgType msgType, Integer playerID, Integer x, Integer y, FieldState fieldState) {
+    public Msg(MsgType msgType, Integer playerID, Object dataObj) {
         this.msgType = msgType;
         this.playerID = playerID;
-        this.x = x;
-        this.y = y;
-        this.fieldState = fieldState;
+        this.dataObj = dataObj;
     }
 
     /**
@@ -68,21 +75,10 @@ public class Msg implements Serializable {
      * @param playerID
      */
     public Msg(MsgType msgType, int playerID) {
-        this(msgType, playerID, null, null, null);
-    }
-
-    /**
-     * Constructor for message from client of type SHOT_PERFORMED
-     * @param msgType
-     * @param playerID
-     * @param x
-     * @param y
-     */
-    public Msg(MsgType msgType, Integer playerID, Integer x, Integer y) {
-        this(msgType, playerID, x, y, null);
+        this(msgType, playerID, null);
     }
 
     public Msg() {
-        this(null, null, null, null, null);
+        this(null, null, null);
     }
 }
