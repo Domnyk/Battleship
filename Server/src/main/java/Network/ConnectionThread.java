@@ -2,6 +2,7 @@ package Network;
 
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import Protocol.MsgType;
@@ -13,13 +14,15 @@ public class ConnectionThread extends Thread {
     private int id;
     private ObjectOutputStream toClient;
     private ObjectInputStream fromClient;
-    private ConcurrentLinkedQueue<Msg> gameMessages;
+    private Socket clientSocket;
+    private ArrayBlockingQueue<Msg> gameMessages;
 
     private static final Logger logger = LogManager.getLogger("Server");
 
-    public ConnectionThread(int id, Socket clientSocket, ConcurrentLinkedQueue<Msg> gameMessages) {
+    public ConnectionThread(int id, Socket clientSocket, ArrayBlockingQueue<Msg> gameMessages) {
         this.id = id;
         this.gameMessages = gameMessages;
+        this.clientSocket = clientSocket;
 
         try {
             toClient = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -39,6 +42,19 @@ public class ConnectionThread extends Thread {
         }
     }
 
+    Socket getClientSocket() {
+        return clientSocket;
+    }
+
+    void closeSocket() {
+        try {
+            clientSocket.close();
+        }
+        catch (IOException e) {
+            logger.info("Client socket closed");
+        }
+    }
+
     @Override
     public void run() {
         logger.info("Thread started");
@@ -53,7 +69,7 @@ public class ConnectionThread extends Thread {
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
+            logger.info("Exception occurred during thread execution");
         }
     }
 }

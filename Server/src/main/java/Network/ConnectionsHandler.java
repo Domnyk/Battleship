@@ -7,13 +7,15 @@ import Protocol.MsgType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import Model.Map;
+
+import java.io.IOException;
 import java.util.Random;
 import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class ConnectionsHandler extends Thread {
-    private ConcurrentLinkedQueue<Msg> gameMessages;
+    private ArrayBlockingQueue<Msg> gameMessages;
     private ConcurrentHashMap<Integer, ConnectionThread> connections;
     private GameServerState gameServerState;
     private HashMap<Integer, Map> playersMaps;
@@ -25,30 +27,49 @@ public final class ConnectionsHandler extends Thread {
         return connections;
     }
 
-    public ConcurrentLinkedQueue<Msg> getGameMessages() {
+    public ArrayBlockingQueue<Msg> getGameMessages() {
         return gameMessages;
     }
 
     public ConnectionsHandler() {
         this.setName("ConnectionsHandler");
 
-        this.gameMessages = new ConcurrentLinkedQueue<Msg>();
+        this.gameMessages = new ArrayBlockingQueue<Msg>(10);
         this.connections = new ConcurrentHashMap<>();
         this.gameServerState = GameServerState.INIT_STATE;
         this.playersMaps = new HashMap<>();
     }
 
 
+    void addConnection(int id, ConnectionThread connectionThread) {
+        if( !connections.contains(id) )
+            connections.put(id, connectionThread);
+    }
+
+    void stopConnectionsThreads() {
+        connections.forEach((id, connection) -> {
+            connection.closeSocket();
+            connection.interrupt();
+        });
+    }
+
+
+
     @Override
     public void run() {
         logger.info("Thread started");
 
-        while(true) {
-            for (Msg msg: gameMessages) {
+        try {
+            Msg msg;
+            while ((msg = gameMessages.take()) != null) {
                 logger.info("Received " + msg.getMsgType() + " from Player with ID " + msg.getPlayerID());
                 handleMessage(msg);
                 gameMessages.poll();
+
             }
+        }
+        catch (InterruptedException e) {
+            logger.info("Thread was interrupted while waiting for message to appear in blocking queue");
         }
     }
 

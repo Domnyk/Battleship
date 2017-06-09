@@ -1,23 +1,49 @@
-import Network.GameServer;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
+import java.io.IOException;
 
-/**
- * Entry point for server applications
- */
-public class Main {
-    /**
-     * Initiates server
-     *
-     * @param args  First argument is number of the port to be used by server
-     */
-    private static final Logger logger = LogManager.getLogger("Server");
+public class Main extends Application {
+    private Stage primaryStage;
+    private AnchorPane layout;
+
+    @Override
+    public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        this.primaryStage.setTitle("Server");
+
+        initLayout();
+    }
+
+    private void initLayout() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(ServerController.class.getResource("Server.fxml"));
+            layout = loader.load();
+
+            Scene scene = new Scene(layout);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            ServerController controller = loader.getController();
+
+            scene.getWindow().setOnCloseRequest((WindowEvent event) -> {
+                controller.closeGameServer();
+                Platform.exit();
+            });
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void main(String[] args) {
-        int portNumber = Integer.parseInt(args[0]);
-
-        GameServer gameServer = new GameServer(portNumber);
-        gameServer.start();
+        launch(args);
     }
 }
