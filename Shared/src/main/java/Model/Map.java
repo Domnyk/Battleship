@@ -43,8 +43,21 @@ public class Map {
                     ++result;
             }
         }
-
         return result;
+    }
+
+    public void updateMap(int[] coordinates) {
+        int x = coordinates[0];
+        int y = coordinates[1];
+
+        FieldState fs = getFieldState(x, y);
+        if( fs == FieldState.EMPTY ) {
+            setFieldState(x, y, FieldState.SHOTED);
+        }
+
+        if( fs == FieldState.SHIP ) {
+            setFieldState(x, y, FieldState.HIT);
+        }
     }
 
     @Override

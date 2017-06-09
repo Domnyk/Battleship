@@ -8,34 +8,34 @@ import org.junit.Test;
 public class MapTest {
     @Test
     public void constructorTest() {
-        Map m = new Map();
+        Map map = new Map();
 
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                assertEquals(m.getFieldState(i, j), FieldState.EMPTY);
+                assertEquals(map.getFieldState(i, j), FieldState.EMPTY);
             }
         }
     }
 
     @Test
     public void getFieldStateTest() {
-        Map m = new Map();
+        Map map = new Map();
 
-        assertEquals(m.getFieldState(0, 0), FieldState.EMPTY);
+        assertEquals(map.getFieldState(0, 0), FieldState.EMPTY);
     }
 
     @Test
     public void setFieldStateTest() {
-        Map m = new Map();
+        Map map = new Map();
         FieldState newFieldState = FieldState.SHIP;
 
-        m.setFieldState(0, 0, newFieldState);
-        assertEquals(m.getFieldState(0, 0), newFieldState);
+        map.setFieldState(0, 0, newFieldState);
+        assertEquals(map.getFieldState(0, 0), newFieldState);
     }
 
     @Test
     public void getGridTest() {
-        Map m1 = new Map();
+        Map map = new Map();
         FieldState[][] correctGrid = new FieldState[10][10];
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -43,12 +43,12 @@ public class MapTest {
             }
         }
 
-        assertArrayEquals(m1.getGrid(), correctGrid);
+        assertArrayEquals(map.getGrid(), correctGrid);
     }
 
     @Test
     public void setGridTest() {
-        Map m = new Map();
+        Map map = new Map();
         FieldState newFieldState = FieldState.SHIP;
         FieldState[][] newGrid = new FieldState[10][10];
         for (int i = 0; i < 10; i++) {
@@ -58,8 +58,8 @@ public class MapTest {
         }
         newGrid[0][0] = newFieldState;
 
-        m.setGrid(newGrid);
-        assertArrayEquals(m.getGrid(), newGrid);
+        map.setGrid(newGrid);
+        assertArrayEquals(map.getGrid(), newGrid);
     }
 
     @Test
@@ -76,18 +76,45 @@ public class MapTest {
 
     @Test
     public void countFieldsTest() {
-        Map map1 = new Map();
+        Map map = new Map();
 
-        map1.setFieldState(0, 0, FieldState.SHIP);
-        map1.setFieldState(0, 1, FieldState.SHIP);
-        map1.setFieldState(0, 2, FieldState.SHOTED);
+        map.setFieldState(0, 0, FieldState.SHIP);
+        map.setFieldState(0, 1, FieldState.SHIP);
+        map.setFieldState(0, 2, FieldState.SHOTED);
 
-        int countShip = map1.countFields(FieldState.SHIP);
-        int countShoted = map1.countFields(FieldState.SHOTED);
-        int countEmpty = map1.countFields(FieldState.EMPTY);
+        int countShip = map.countFields(FieldState.SHIP);
+        int countShoted = map.countFields(FieldState.SHOTED);
+        int countEmpty = map.countFields(FieldState.EMPTY);
 
         assertEquals(countShip, 2);
         assertEquals(countShoted, 1);
         assertEquals(countEmpty, 97);
+    }
+
+    @Test
+    public void updateMapTestWithEmptyToShoted() {
+        Map map = new Map();
+
+        int[] coordinates = {0, 0};
+        map.updateMap(coordinates);
+
+        assertEquals(map.countFields(FieldState.SHOTED), 1);
+        assertEquals(map.countFields(FieldState.EMPTY), 99);
+        assertEquals(map.countFields(FieldState.HIT), 0);
+        assertEquals(map.countFields(FieldState.SHIP), 0);
+    }
+
+    @Test
+    public void updateMapTestWithShipToHit() {
+        Map map = new Map();
+        map.setFieldState(0, 0, FieldState.SHIP);
+
+        int[] coordinates = {0, 0};
+        map.updateMap(coordinates);
+
+        assertEquals(map.countFields(FieldState.SHOTED), 0);
+        assertEquals(map.countFields(FieldState.EMPTY), 99);
+        assertEquals(map.countFields(FieldState.HIT), 1);
+        assertEquals(map.countFields(FieldState.SHIP), 0);
     }
 }

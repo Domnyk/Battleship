@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class Msg implements Serializable {
     private MsgType msgType;
-    private Integer playerID, x, y;
+    private Integer playerID;
     private Object dataObj;
     private FieldState fieldState;
 
@@ -24,22 +24,6 @@ public class Msg implements Serializable {
 
     public void setPlayerID(Integer playerID) {
         this.playerID = playerID;
-    }
-
-    public Integer getX() {
-        return x;
-    }
-
-    public void setX(Integer x) {
-        this.x = x;
-    }
-
-    public Integer getY() {
-        return y;
-    }
-
-    public void setY(Integer y) {
-        this.y = y;
     }
 
     public FieldState getFieldState() {

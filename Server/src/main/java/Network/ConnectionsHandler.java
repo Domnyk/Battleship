@@ -1,5 +1,6 @@
 package Network;
 
+import Model.FieldState;
 import Model.GameServerState;
 import Protocol.Msg;
 import Protocol.MsgType;
@@ -32,8 +33,9 @@ public final class ConnectionsHandler extends Thread {
         this.setName("ConnectionsHandler");
 
         this.gameMessages = new ConcurrentLinkedQueue<Msg>();
-        this.connections = new ConcurrentHashMap<Integer, ConnectionThread>();
+        this.connections = new ConcurrentHashMap<>();
         this.gameServerState = GameServerState.INIT_STATE;
+        this.playersMaps = new HashMap<>();
     }
 
 
@@ -61,7 +63,7 @@ public final class ConnectionsHandler extends Thread {
                 break;
 
             case SHOT_PERFORMED:
-                //handle_shot_performed(clientMsg);
+                handle_shot_performed(clientMsg);
                 break;
 
         }
@@ -79,8 +81,6 @@ public final class ConnectionsHandler extends Thread {
     private void handle_establish_connection(Msg clientMsg) {
         Msg answer = new Msg();
         int id = clientMsg.getPlayerID();
-
-        logger.info("Player with ID " + id + " connected");
 
         if( gameServerState == GameServerState.INIT_STATE ) {
             gameServerState = GameServerState.WAIT_FOR_SECOND_PLAYER;
@@ -101,8 +101,6 @@ public final class ConnectionsHandler extends Thread {
         Msg answer = new Msg();
 
         int id = clientMsg.getPlayerID();
-        logger.info("Player with ID " + id + " finished placing his ships");
-
         Map clientMap = (Map) clientMsg.getDataObj();
         playersMaps.put(id, clientMap);
 
@@ -134,16 +132,38 @@ public final class ConnectionsHandler extends Thread {
     private void handle_shot_performed(Msg clientMsg) {
         Msg answer = new Msg();
 
-        int id = clientMsg.getPlayerID();
-        logger.info("Player with ID " + id + " has performed a shot");
+        int playerId = clientMsg.getPlayerID();
+        int enemyId = (playerId+1)%2;
 
-        /*
-            Co trzeba zrobic:
-                1. zaktualizowac mape po stronie serwera
-                2. Sprawdzic czy ktorys z graczy przegral/wygral
-                3. Jesli ktorys przegral/wygral to wyslij wiadomosc WIN/LOSE i przejdz do stanu END
-                4. Jesli nikt nie wygral/przegral to wyslac wiadomosci Shot result a nastepnie WAIT FOR MOVE/MAKE MOVE
-         */
+        int[] coordinates = (int[]) clientMsg.getDataObj();
+        playersMaps.get(enemyId).updateMap(coordinates);
+
+        boolean isLoser = (playersMaps.get(enemyId).countFields(FieldState.SHIP) == 0);
+        if( isLoser ) {
+            gameServerState = GameServerState.END;
+
+            answer.setMsgType(MsgType.WIN);
+            answer.setPlayerID(playerId);
+            send(answer);
+
+            answer.setMsgType(MsgType.LOSE);
+            answer.setPlayerID(enemyId);
+            send(answer);
+        }
+        else {
+            // GameServerState is WAIT_FOR_MOVE and it stays that way
+
+            answer.setMsgType(MsgType.SHOT_RESULT);
+            sendBroadcast(answer);
+
+            answer.setMsgType(MsgType.MAKE_MOVE);
+            answer.setPlayerID(enemyId);
+            send(answer);
+
+            answer.setMsgType(MsgType.WAIT_FOR_MOVE);
+            answer.setPlayerID(playerId);
+            send(answer);
+        }
     }
 
 }
