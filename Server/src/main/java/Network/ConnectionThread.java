@@ -64,7 +64,6 @@ public class ConnectionThread extends Thread {
         try {
             Msg msgFromClient, msgToClient;
             while((msgFromClient = (Msg) fromClient.readObject()) != null) {
-                logger.info("Message from client has been received");
                 gameMessages.add(msgFromClient);
             }
         }

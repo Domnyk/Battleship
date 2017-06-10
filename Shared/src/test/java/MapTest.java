@@ -86,35 +86,51 @@ public class MapTest {
         int countShoted = map.countFields(FieldState.SHOTED);
         int countEmpty = map.countFields(FieldState.EMPTY);
 
-        assertEquals(countShip, 2);
-        assertEquals(countShoted, 1);
-        assertEquals(countEmpty, 97);
+        assertEquals(2, countShip);
+        assertEquals(1, countShoted);
+        assertEquals(97, countEmpty);
     }
 
     @Test
-    public void updateMapTestWithEmptyToShoted() {
+    public void updateMapWithShotTestWithEmptyToShoted() {
         Map map = new Map();
 
         int[] coordinates = {0, 0};
-        map.updateMap(coordinates);
 
-        assertEquals(map.countFields(FieldState.SHOTED), 1);
-        assertEquals(map.countFields(FieldState.EMPTY), 99);
-        assertEquals(map.countFields(FieldState.HIT), 0);
-        assertEquals(map.countFields(FieldState.SHIP), 0);
+        assertEquals(false, map.updateMapWithShot(coordinates));
+        assertEquals(1, map.countFields(FieldState.SHOTED));
+        assertEquals(99, map.countFields(FieldState.EMPTY));
+        assertEquals(0, map.countFields(FieldState.HIT));
+        assertEquals(0, map.countFields(FieldState.SHIP));
     }
 
     @Test
-    public void updateMapTestWithShipToHit() {
+    public void updateMapWithShotTestWithShipToHit() {
         Map map = new Map();
         map.setFieldState(0, 0, FieldState.SHIP);
 
         int[] coordinates = {0, 0};
-        map.updateMap(coordinates);
 
-        assertEquals(map.countFields(FieldState.SHOTED), 0);
-        assertEquals(map.countFields(FieldState.EMPTY), 99);
-        assertEquals(map.countFields(FieldState.HIT), 1);
-        assertEquals(map.countFields(FieldState.SHIP), 0);
+        assertEquals(true, map.updateMapWithShot(coordinates));
+        assertEquals(0, map.countFields(FieldState.SHOTED));
+        assertEquals(99, map.countFields(FieldState.EMPTY));
+        assertEquals(1, map.countFields(FieldState.HIT));
+        assertEquals(0, map.countFields(FieldState.SHIP));
+    }
+
+    @Test
+    public void placeShipTest() {
+        Map map = new Map();
+        int[] firstCoordinates = {0, 0};
+        int[] lastCoordinates = {0, 4};
+
+        map.placeShip(firstCoordinates, lastCoordinates);
+        for (int i = 0; i < 5; ++i) {
+            assertEquals(FieldState.SHIP, map.getFieldState(0, i));
+        }
+
+        assertEquals(map.countFields(FieldState.EMPTY), 95);
+        assertEquals(map.countFields(FieldState.SHOTED),0);
+        assertEquals(map.countFields(FieldState.HIT), 0);
     }
 }

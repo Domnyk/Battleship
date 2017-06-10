@@ -10,7 +10,8 @@ buildscript {
 }
 
 apply plugin: 'java'
-apply plugin: 'javafx-gradle-plugin'
+apply plugin: 'application'
+//apply plugin: 'javafx-gradle-plugin'
 
 repositories {
     mavenLocal()
@@ -24,6 +25,8 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-jfx {
+mainClassName = 'Main'
+
+/*jfx {
     mainClass = 'Main'
-}
+}*/

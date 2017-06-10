@@ -8,7 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import Model.Map;
 
-import java.io.IOException;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -65,7 +64,6 @@ public final class ConnectionsHandler extends Thread {
                 logger.info("Received " + msg.getMsgType() + " from Player with ID " + msg.getPlayerID());
                 handleMessage(msg);
                 gameMessages.poll();
-
             }
         }
         catch (InterruptedException e) {
@@ -75,8 +73,8 @@ public final class ConnectionsHandler extends Thread {
 
     public void handleMessage(Msg clientMsg) {
         switch (clientMsg.getMsgType()) {
-            case ESTABLISH_CONNECTION:
-                handle_establish_connection(clientMsg);
+            case ID_IS_SET:
+                handle_id_is_set(clientMsg);
                 break;
 
             case SHIPS_PLACED:
@@ -86,29 +84,26 @@ public final class ConnectionsHandler extends Thread {
             case SHOT_PERFORMED:
                 handle_shot_performed(clientMsg);
                 break;
-
         }
     }
 
     private void send(Msg answer) {
+        logger.info("Sending " + answer.getMsgType() + " to player with ID: " + answer.getPlayerID());
         connections.get(answer.getPlayerID()).write(answer);
     }
 
     private void sendBroadcast(Msg answer) {
+        logger.info("Sending broadcast:  " + answer.getMsgType());
         for(int i = 0; i < connections.size(); ++i)
             connections.get(i).write(answer);
     }
 
-    private void handle_establish_connection(Msg clientMsg) {
+    private void handle_id_is_set(Msg clientMsg) {
         Msg answer = new Msg();
         int id = clientMsg.getPlayerID();
 
         if( gameServerState == GameServerState.INIT_STATE ) {
             gameServerState = GameServerState.WAIT_FOR_SECOND_PLAYER;
-
-            answer.setMsgType(MsgType.WAIT_FOR_SECOND_PLAYER);
-            answer.setPlayerID(clientMsg.getPlayerID());
-            send(answer);
         }
         else {
             gameServerState = GameServerState.WAIT_FOR_FIRST_READY;
@@ -153,36 +148,33 @@ public final class ConnectionsHandler extends Thread {
     private void handle_shot_performed(Msg clientMsg) {
         Msg answer = new Msg();
 
-        int playerId = clientMsg.getPlayerID();
-        int enemyId = (playerId+1)%2;
+        int activePlayerId = clientMsg.getPlayerID();
+        int waitingPlayerId = (activePlayerId+1)%2;
 
         int[] coordinates = (int[]) clientMsg.getDataObj();
-        playersMaps.get(enemyId).updateMap(coordinates);
+        Boolean isHit = playersMaps.get(waitingPlayerId).updateMapWithShot(coordinates);
 
-        boolean isLoser = (playersMaps.get(enemyId).countFields(FieldState.SHIP) == 0);
+        boolean isLoser = (playersMaps.get(waitingPlayerId).countFields(FieldState.SHIP) == 0);
         if( isLoser ) {
             gameServerState = GameServerState.END;
 
-            answer.setMsgType(MsgType.WIN);
-            answer.setPlayerID(playerId);
+            answer = new Msg(MsgType.WIN, activePlayerId, coordinates);
             send(answer);
 
-            answer.setMsgType(MsgType.LOSE);
-            answer.setPlayerID(enemyId);
+            answer = new Msg(MsgType.LOSE, waitingPlayerId, coordinates);
             send(answer);
         }
         else {
             // GameServerState is WAIT_FOR_MOVE and it stays that way
+            MsgType msgType = isHit ? MsgType.SHOT_HIT : MsgType.SHOT_MISS;
 
-            answer.setMsgType(MsgType.SHOT_RESULT);
+            answer = new Msg(msgType, activePlayerId, coordinates);
             sendBroadcast(answer);
 
-            answer.setMsgType(MsgType.MAKE_MOVE);
-            answer.setPlayerID(enemyId);
+            answer = new Msg(MsgType.MAKE_MOVE, waitingPlayerId);
             send(answer);
 
-            answer.setMsgType(MsgType.WAIT_FOR_MOVE);
-            answer.setPlayerID(playerId);
+            answer = new Msg(MsgType.WAIT_FOR_MOVE, activePlayerId);
             send(answer);
         }
     }

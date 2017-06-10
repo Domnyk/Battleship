@@ -1,12 +1,13 @@
 package Model;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
  * Map
  * Represents one Player's map
  */
-public class Map {
+public class Map implements Serializable {
     private FieldState[][] grid;
 
     public Map() {
@@ -27,12 +28,12 @@ public class Map {
         this.grid = newGrid;
     }
 
-    public FieldState getFieldState(int a, int b) {
-        return grid[a][b];
+    public FieldState getFieldState(int row, int col) {
+        return grid[row][col];
     }
 
-    public void setFieldState(int a, int b, FieldState newFieldState) {
-        grid[a][b] = newFieldState;
+    public void setFieldState(int row, int col, FieldState newFieldState) {
+        grid[row][col] = newFieldState;
     }
 
     public int countFields(FieldState fieldState) {
@@ -46,17 +47,33 @@ public class Map {
         return result;
     }
 
-    public void updateMap(int[] coordinates) {
-        int x = coordinates[0];
-        int y = coordinates[1];
+    public Boolean updateMapWithShot(int[] coordinates) {
+        int row = coordinates[0];
+        int col = coordinates[1];
 
-        FieldState fs = getFieldState(x, y);
+        FieldState fs = getFieldState(row, col);
         if( fs == FieldState.EMPTY ) {
-            setFieldState(x, y, FieldState.SHOTED);
+            setFieldState(row, col, FieldState.SHOTED);
+            return false;
         }
 
         if( fs == FieldState.SHIP ) {
-            setFieldState(x, y, FieldState.HIT);
+            setFieldState(row, col, FieldState.HIT);
+            return true;
+        }
+        return null;
+    }
+
+    public void placeShip(int[] firstCoordinates, int[] lastCoordinates) {
+        int minRow = Math.min(firstCoordinates[0], lastCoordinates[0]);
+        int maxRow = Math.max(firstCoordinates[0], lastCoordinates[0]);
+        int minCol = Math.min(firstCoordinates[1], lastCoordinates[1]);
+        int maxCol = Math.max(firstCoordinates[1], lastCoordinates[1]);
+
+        for (int i = minRow; i <= maxRow; ++i) {
+            for (int j = minCol; j <= maxCol; ++j) {
+                setFieldState(i, j, FieldState.SHIP);
+            }
         }
     }
 

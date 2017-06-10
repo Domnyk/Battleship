@@ -3,15 +3,19 @@ package Model;
 import Protocol.PlayerState;
 
 public class Player {
-    Map playerMap, enemyMap;
-    Integer playerId;
-    PlayerState playerState;
+    private Map playerMap, enemyMap;
+    private Integer playerId;
+    private PlayerState playerState;
 
     public Player(Map playerMap, Map enemyMap, Integer playerId, PlayerState playerState) {
         this.playerMap = playerMap;
         this.enemyMap = enemyMap;
         this.playerId = playerId;
         this.playerState = playerState;
+    }
+
+    public Player(int id) {
+        this(new Map(), new Map(), id, PlayerState.INIT_STATE);
     }
 
     public Map getPlayerMap() {

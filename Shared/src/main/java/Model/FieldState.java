@@ -1,9 +1,11 @@
 package Model;
 
+import java.io.Serializable;
+
 /**
  * Enum type which describes state of a field
  */
-public enum FieldState {
+public enum FieldState implements Serializable {
     /**
      * Empty field
      */

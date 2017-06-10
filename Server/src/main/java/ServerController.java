@@ -1,12 +1,11 @@
-import Network.GameServer;
-import javafx.fxml.FXML;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import javafx.scene.layout.AnchorPane;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.*;
 import javafx.scene.paint.Paint;
 
+import Network.GameServer;
 
 public class ServerController {
     private static final Logger logger = LogManager.getLogger("Server");

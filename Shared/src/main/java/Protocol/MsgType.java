@@ -1,8 +1,10 @@
 package Protocol;
 
-public enum MsgType {
+import java.io.Serializable;
+
+public enum MsgType implements Serializable {
     SET_ID,
-    ESTABLISH_CONNECTION,
+    ID_IS_SET,
     WAIT_FOR_SECOND_PLAYER,
     WAIT_FOR_SECOND_READY,
     PLACE_SHIPS,
@@ -10,7 +12,8 @@ public enum MsgType {
     WAIT_FOR_MOVE,
     MAKE_MOVE,
     SHOT_PERFORMED,
-    SHOT_RESULT,
+    SHOT_HIT,
+    SHOT_MISS,
     WIN,
     LOSE
 }
