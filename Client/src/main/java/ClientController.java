@@ -14,7 +14,7 @@ import javafx.scene.Node;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Controller {
+public class ClientController {
     private static final Logger logger = LogManager.getLogger("Client");
     private Player player;
     private int shipLength, currentNumOfFieldsTaken, numOfShipsPlaced;
@@ -74,7 +74,7 @@ public class Controller {
         }
     };
 
-    public Controller() {
+    public ClientController() {
         player = new Player(null);
         isConnectionHandlerThreadUp = false;
         isMsgHandlerThreadUp = false;

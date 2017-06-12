@@ -26,14 +26,14 @@ public class Main extends Application {
     private void initLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(Controller.class.getResource("Client.fxml"));
+            loader.setLocation(ClientController.class.getResource("Client.fxml"));
             layout = loader.load();
 
             Scene scene = new Scene(layout);
             primaryStage.setScene(scene);
             primaryStage.show();
 
-            Controller controller = loader.getController();
+            ClientController controller = loader.getController();
 
             scene.getWindow().setOnCloseRequest((WindowEvent event) -> {
                 controller.close();
