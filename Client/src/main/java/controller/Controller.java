@@ -20,15 +20,14 @@ import java.util.HashMap;
 public class Controller {
     private static final Logger logger = LogManager.getLogger("Client");
     private Player player;
-    private int shipLength, currentNumOfFieldsTaken, numOfShipsPlaced;
+    private int shipLength;
+    private int currentNumOfFieldsTaken;
+    private int numOfShipsPlaced;
     private ConnectionHandler connectionHandler;
     private MsgHandler msgHandler;
-    private boolean isConnectionHandlerThreadUp, isMsgHandlerThreadUp;
 
     public Controller() {
         player = new Player(null);
-        isConnectionHandlerThreadUp = false;
-        isMsgHandlerThreadUp = false;
     }
 
     ConnectionHandler getConnectionHandler() {
@@ -62,7 +61,7 @@ public class Controller {
     @FXML
     private void initialize() {
         // TODO - SET IT TO FALSE WHEN PUT ON GITHUB
-        finishedButton.setDisable(false);
+        finishedButton.setDisable(true);
         shipsMenuBar.setDisable(true);
         status.setText("Not connected");
 
@@ -73,7 +72,8 @@ public class Controller {
     @FXML
     private void handleFinishedButtonFired() {
         Msg answer = new Msg(MsgType.SHIPS_PLACED, player.getPlayerId(), player.getPlayerMap());
-        connectionHandler.addMessageToSend(answer);
+        //connectionHandler.getMessagesToSend().add()(answer);
+        connectionHandler.getMessagesToSend().add(answer);
 
         status.setText("Wait for server response");
         finishedButton.setDisable(true);
@@ -89,13 +89,9 @@ public class Controller {
         int port = Integer.parseInt(serverPort.getText());
 
         connectionHandler = new ConnectionHandler(address, port);
-        connectionHandler.start();
 
         msgHandler = new MsgHandler(this);
         msgHandler.start();
-
-        isConnectionHandlerThreadUp = true;
-        isMsgHandlerThreadUp = true;
     };
 
     @FXML
@@ -120,7 +116,7 @@ public class Controller {
         Coordinates shotCoordinates = new Coordinates(GridPane.getRowIndex(node), GridPane.getColumnIndex(node));
         Msg shotMsg = new Msg(MsgType.SHOT_PERFORMED, player.getPlayerId(), shotCoordinates);
 
-        connectionHandler.addMessageToSend(shotMsg);
+        connectionHandler.getMessagesToSend().add(shotMsg);
     }
 
     @FXML
@@ -150,7 +146,7 @@ public class Controller {
 
     void handleSetId(Msg msg) {
         player.setPlayerId(msg.getPlayerID());
-        connectionHandler.addMessageToSend(new Msg(MsgType.ID_IS_SET, msg.getPlayerID()));
+        connectionHandler.getMessagesToSend().add(new Msg(MsgType.ID_IS_SET, msg.getPlayerID()));
 
         Platform.runLater(() -> {
             status.setText("Waiting for game to begin");
@@ -173,7 +169,7 @@ public class Controller {
     }
 
     void handleWaitForMove() {
-        connectionHandler.addMessageToSend(new Msg(MsgType.WAITING, player.getPlayerId()));
+        connectionHandler.getMessagesToSend().add(new Msg(MsgType.WAITING, player.getPlayerId()));
 
         Platform.runLater(() -> {
             status.setText("Wait for move");
@@ -186,7 +182,7 @@ public class Controller {
     }
 
     void handleHitWaitForMove(Integer row, Integer col) {
-        connectionHandler.addMessageToSend(new Msg(MsgType.WAITING, player.getPlayerId()));
+        connectionHandler.getMessagesToSend().add(new Msg(MsgType.WAITING, player.getPlayerId()));
         updateGUI("You have hit the enemy! Good job", enemyGrid, enemyGrid, true, "red",
                     row, col);
     }
@@ -197,7 +193,7 @@ public class Controller {
     }
 
     void handleMissWaitForMove(Integer row, Integer col) {
-        connectionHandler.addMessageToSend(new Msg(MsgType.WAITING, player.getPlayerId()));
+        connectionHandler.getMessagesToSend().add(new Msg(MsgType.WAITING, player.getPlayerId()));
         updateGUI("You didn't hit. Wait for move", enemyGrid, enemyGrid, true, "black",
                     row, col);
     }
@@ -235,8 +231,8 @@ public class Controller {
         tmp.put("Carrier[Size 5]", 5);
         tmp.put("Battleship[Size 4]", 4);
         tmp.put("Cruiser[Size 3]", 3);
-        tmp.put("Submarine[Size 2]", 2);
-        tmp.put("Destroyer[Size 1]", 1);
+        tmp.put("Submarine[Size 3]", 3);
+        tmp.put("Destroyer[Size 2]", 2);
 
         return tmp.get(menuItem.getText());
     }
@@ -248,11 +244,13 @@ public class Controller {
     }
 
     public void close() {
-        if( isConnectionHandlerThreadUp && isMsgHandlerThreadUp ) {
-            connectionHandler.closeSocket();
-            msgHandler.interrupt();
-            connectionHandler.interrupt();
-            logger.info("connectionHandler interrupted");
+        if( connectionHandler != null ) {
+            connectionHandler.closeConnection();
         }
+
+        if( msgHandler != null && msgHandler.isAlive() ) {
+           msgHandler.interrupt();
+        }
+        logger.info("ConnectionHandler interrupted");
     }
 }

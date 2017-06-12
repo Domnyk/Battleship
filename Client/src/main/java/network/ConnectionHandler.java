@@ -9,18 +9,15 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class ConnectionHandler extends Thread {
+public class ConnectionHandler {
     private static final Logger logger = LogManager.getLogger("Client");
     private Socket socket;
     private ObjectOutputStream toServer;
     private ObjectInputStream fromServer;
-    private ArrayBlockingQueue<Msg> messagesReceived, messagesToSent;
+    private MessagesReceiver messagesReceiver;
+    private MessagesSender messagesSender;
 
     public ConnectionHandler(String address, int port) {
-        this.messagesReceived = new ArrayBlockingQueue<Msg>(10);
-        this.messagesToSent = new ArrayBlockingQueue<Msg>(10);
-
-
         try {
             socket = new Socket(address, port);
             toServer = new ObjectOutputStream(socket.getOutputStream());
@@ -29,52 +26,38 @@ public class ConnectionHandler extends Thread {
         catch (IOException e) {
             logger.info("Error while creating socket");
         }
+
+        messagesReceiver = new MessagesReceiver(fromServer);
+        messagesSender = new MessagesSender(toServer);
+
+        messagesReceiver.start();
+        messagesSender.start();
     }
 
     public ArrayBlockingQueue<Msg> getMessagesReceived() {
-        return messagesReceived;
+        return messagesReceiver.getMessagesReceived();
     }
 
-    private void send(Msg msgToServer) {
-        try {
-            toServer.writeObject(msgToServer);
-        } catch (IOException e) {
-            logger.info("Exception occurred while writing message to server");
+    public ArrayBlockingQueue<Msg> getMessagesToSend() {
+        return messagesSender.getMessagesToSend();
+    }
+
+    public void closeConnection() {
+        if( messagesReceiver.isAlive() ) {
+            messagesReceiver.interrupt();
         }
-        logger.info("Message sent: " + msgToServer.getMsgType());
-    }
 
-    public void addMessageToSend(Msg msgToServer) {
-        messagesToSent.add(msgToServer);
-    }
-
-    @Override
-    public void run() {
-        this.setName("network.ConnectionHandler");
+        if( messagesSender.isAlive() ) {
+            messagesSender.interrupt();
+        }
 
         try {
-            Msg msgFromServer, msgToServer;
-            while((msgFromServer = (Msg) fromServer.readObject()) != null ) {
-                logger.info("Received message: " + msgFromServer.getMsgType());
-                messagesReceived.add(msgFromServer);
-
-                while( (msgToServer = messagesToSent.take()) != null ) {
-                    send(msgToServer);
-                    break;
-                }
+            if( socket != null ) {
+                socket.close();
             }
         }
-        catch (Exception e) {
-            logger.warn("IOException from readObject()");
-        }
-    }
-
-    public void closeSocket() {
-        try {
-            socket.close();
-        }
-        catch (Exception e) {
-            logger.info("Socket was closed");
+        catch(IOException e) {
+            logger.info("Socket closed");
         }
     }
 }

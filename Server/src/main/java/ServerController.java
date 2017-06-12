@@ -12,7 +12,6 @@ public class ServerController {
     private  GameServer gs;
 
     public ServerController() {
-
     }
 
     @FXML

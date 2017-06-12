@@ -140,10 +140,6 @@ public final class ConnectionsHandler extends Thread {
         }
     }
 
-    private void handle_waiting() {
-
-    }
-
     private void handle_shot_performed(Msg clientMsg) {
         Msg answer;
 

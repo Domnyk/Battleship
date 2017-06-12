@@ -3,7 +3,8 @@ package model;
 import java.io.Serializable;
 
 public class Coordinates implements Serializable {
-    private Integer row, col;
+    private Integer row;
+    private Integer col;
 
     public Coordinates(Integer row, Integer col) {
         this.row = row;
