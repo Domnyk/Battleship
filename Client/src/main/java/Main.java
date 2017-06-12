@@ -1,3 +1,4 @@
+import controller.Controller;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -26,14 +27,14 @@ public class Main extends Application {
     private void initLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(ClientController.class.getResource("Client.fxml"));
+            loader.setLocation(Controller.class.getResource("Client.fxml"));
             layout = loader.load();
 
             Scene scene = new Scene(layout);
             primaryStage.setScene(scene);
             primaryStage.show();
 
-            ClientController controller = loader.getController();
+            Controller controller = loader.getController();
 
             scene.getWindow().setOnCloseRequest((WindowEvent event) -> {
                 controller.close();

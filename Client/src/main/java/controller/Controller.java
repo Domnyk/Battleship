@@ -1,3 +1,5 @@
+package controller;
+
 import model.FieldState;
 import model.Player;
 import model.Coordinates;
@@ -5,7 +7,6 @@ import network.ConnectionHandler;
 import protocol.Msg;
 import protocol.MsgType;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -14,71 +15,24 @@ import javafx.scene.Node;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ClientController {
+import java.util.HashMap;
+
+public class Controller {
     private static final Logger logger = LogManager.getLogger("Client");
     private Player player;
     private int shipLength, currentNumOfFieldsTaken, numOfShipsPlaced;
     private ConnectionHandler connectionHandler;
-    private Thread msgHandlerThread;
+    private MsgHandler msgHandler;
     private boolean isConnectionHandlerThreadUp, isMsgHandlerThreadUp;
 
-    private Task msgHandler = new Task<Void>() {
-        @Override public Void call() throws Exception {
-            logger.info("Task is up");
-            Msg msg;
-            while( (msg = connectionHandler.getMessagesReceived().take()) != null)
-            {
-                Coordinates coordinates = (Coordinates)msg.getDataObj();
-                Integer row = null;
-                Integer col = null;
-                if (coordinates != null ) {
-                    row = coordinates.getRow();
-                    col = coordinates.getCol();
-                }
-
-                switch(msg.getMsgType()) {
-                    case SET_ID:
-                        handleSetId(msg);
-                        break;
-                    case PLACE_SHIPS:
-                        handlePlaceShips();
-                        break;
-                    case MAKE_MOVE:
-                        handleMakeMove();
-                        break;
-                    case WAIT_FOR_MOVE:
-                        handleWaitForMove();
-                        break;
-                    case HIT_MAKE_MOVE:
-                        handleHitMakeMove(row, col);
-                        break;
-                    case HIT_WAIT_FOR_MOVE:
-                        handleHitWaitForMove(row, col);
-                        break;
-                    case MISS_MAKE_MOVE:
-                        handleMissMakeMove(row, col);
-                        break;
-                    case MISS_WAIT_FOR_MOVE:
-                        handleMissWaitForMove(row, col);
-                        break;
-                    case LOSE:
-                        handleLose(row, col);
-                        break;
-                    case WIN:
-                        handleWin(row, col);
-                        break;
-                }
-
-            }
-            return null;
-        }
-    };
-
-    public ClientController() {
+    public Controller() {
         player = new Player(null);
         isConnectionHandlerThreadUp = false;
         isMsgHandlerThreadUp = false;
+    }
 
+    ConnectionHandler getConnectionHandler() {
+        return connectionHandler;
     }
 
     @FXML
@@ -137,9 +91,8 @@ public class ClientController {
         connectionHandler = new ConnectionHandler(address, port);
         connectionHandler.start();
 
-        msgHandlerThread = new Thread(msgHandler);
-        msgHandlerThread.setName("msgHandlerThread");
-        msgHandlerThread.start();
+        msgHandler = new MsgHandler(this);
+        msgHandler.start();
 
         isConnectionHandlerThreadUp = true;
         isMsgHandlerThreadUp = true;
@@ -155,7 +108,7 @@ public class ClientController {
         MenuItem menuItem = (MenuItem) event.getSource();
         menuItem.setDisable(true);
 
-        shipLength = switchMenuItem(menuItem);
+        shipLength = getShipLength(menuItem);
     }
 
     @ FXML
@@ -195,7 +148,7 @@ public class ClientController {
         }
     }
 
-    private void handleSetId(Msg msg) {
+    void handleSetId(Msg msg) {
         player.setPlayerId(msg.getPlayerID());
         connectionHandler.addMessageToSend(new Msg(MsgType.ID_IS_SET, msg.getPlayerID()));
 
@@ -205,21 +158,21 @@ public class ClientController {
         });
     }
 
-    private void handlePlaceShips() {
+    void handlePlaceShips() {
         Platform.runLater(() -> {
             shipsMenuBar.setDisable(false);
             status.setText("Choose ship from menu bar");
         });
     }
 
-    private void handleMakeMove() {
+    void handleMakeMove() {
         Platform.runLater(() -> {
             status.setText("Make move");
             setGridIsDisable(enemyGrid, false);
         });
     }
 
-    private void handleWaitForMove() {
+    void handleWaitForMove() {
         connectionHandler.addMessageToSend(new Msg(MsgType.WAITING, player.getPlayerId()));
 
         Platform.runLater(() -> {
@@ -227,85 +180,65 @@ public class ClientController {
         });
     }
 
-    private void handleHitMakeMove(Integer row, Integer col) {
-        Platform.runLater(() -> {
-            status.setText("You have been shot! Your turn");
-            yourGrid.getChildren().get(row*10+col).setStyle("-fx-background-color: red");
-            setGridIsDisable(enemyGrid, false);
-        });
+    void handleHitMakeMove(Integer row, Integer col) {
+        updateGUI("You have been shot! Your turn", yourGrid, enemyGrid, false, "red",
+                    row, col);
     }
 
-    private void handleHitWaitForMove(Integer row, Integer col) {
+    void handleHitWaitForMove(Integer row, Integer col) {
         connectionHandler.addMessageToSend(new Msg(MsgType.WAITING, player.getPlayerId()));
-
-        Platform.runLater(() -> {
-            status.setText("You have hit the enemy! Good job");
-            enemyGrid.getChildren().get(row*10+col).setStyle("-fx-background-color: red");
-            setGridIsDisable(enemyGrid, true);
-        });
+        updateGUI("You have hit the enemy! Good job", enemyGrid, enemyGrid, true, "red",
+                    row, col);
     }
 
-    private void handleMissMakeMove(Integer row, Integer col) {
-        Platform.runLater(() -> {
-            status.setText("Enemy didn't hit you. Your move");
-            yourGrid.getChildren().get(row*10+col).setStyle("-fx-background-color: black");
-            setGridIsDisable(enemyGrid, false);
-        });
+    void handleMissMakeMove(Integer row, Integer col) {
+        updateGUI("Enemy didn't hit you. Your move", yourGrid, enemyGrid, false, "black",
+                    row, col);
     }
 
-    private void handleMissWaitForMove(Integer row, Integer col) {
+    void handleMissWaitForMove(Integer row, Integer col) {
         connectionHandler.addMessageToSend(new Msg(MsgType.WAITING, player.getPlayerId()));
+        updateGUI("You didn't hit. Wait for move", enemyGrid, enemyGrid, true, "black",
+                    row, col);
+    }
 
+    void handleLose(Integer row, Integer col) {
+        updateGUI("You have lost", yourGrid, enemyGrid, true, "red", row, col);
+    }
+
+    void handleWin(Integer row, Integer col) {
+        updateGUI("You have won", enemyGrid, enemyGrid, true, "red", row, col);
+    }
+
+    /**
+     *
+     * @param statusVal Text which will appear in status TextField
+     * @param gridToUpdate Grid which will be updated with a shot result
+     * @param gridToChangeIsDisable Grid which status will be changed to enable or prevent shooting
+     * @param newGridState A value to which gridToChangeIsDisable will be changed
+     * @param color Color which will appear in cell of updated grid
+     * @param row Row of cell to update
+     * @param col Column of cell to update
+     */
+    void updateGUI(String statusVal, GridPane gridToUpdate, GridPane gridToChangeIsDisable, boolean newGridState,
+                     String color, Integer row, Integer col) {
         Platform.runLater(() -> {
-            status.setText("You didn't hit. Wait for move");
-            enemyGrid.getChildren().get(row*10+col).setStyle("-fx-background-color: black");
-            setGridIsDisable(enemyGrid, true);
+            status.setText(statusVal);
+
+            gridToUpdate.getChildren().get(row * 10 + col).setStyle("-fx-background-color: " + color);
+            setGridIsDisable(gridToChangeIsDisable, newGridState);
         });
     }
 
-    private void handleLose(Integer row, Integer col) {
-        Platform.runLater(() -> {
-            status.setText("You have lost");
+    private Integer getShipLength(MenuItem menuItem) {
+        HashMap<String, Integer> tmp = new HashMap<>();
+        tmp.put("Carrier[Size 5]", 5);
+        tmp.put("Battleship[Size 4]", 4);
+        tmp.put("Cruiser[Size 3]", 3);
+        tmp.put("Submarine[Size 2]", 2);
+        tmp.put("Destroyer[Size 1]", 1);
 
-            yourGrid.getChildren().get(row*10+col).setStyle("-fx-background-color: red");
-            setGridIsDisable(enemyGrid, true);
-        });
-    }
-
-    private void handleWin(Integer row, Integer col) {
-        Platform.runLater(() -> {
-            status.setText("You have won");
-
-            enemyGrid.getChildren().get(row*10+col).setStyle("-fx-background-color: red");
-            setGridIsDisable(enemyGrid, true);
-        });
-    }
-
-    private int switchMenuItem(MenuItem menuItem) {
-        int numOfFieldsForShip = 0;
-
-        switch (menuItem.getText()) {
-            case "Carrier[Size 5]":
-                numOfFieldsForShip = 5;
-                break;
-            case "Battleship[Size 4]":
-                numOfFieldsForShip = 4;
-                break;
-            case "Cruiser[Size 3]":
-                numOfFieldsForShip = 3;
-                break;
-            case "Submarine[Size 3]":
-                numOfFieldsForShip = 3;
-                break;
-            case "Destroyer[Size 2]":
-                numOfFieldsForShip = 2;
-                break;
-            default:
-                logger.info("Problem while matching ship to new player state");
-                break;
-        }
-
-        return numOfFieldsForShip;
+        return tmp.get(menuItem.getText());
     }
 
     private void setGridIsDisable(GridPane gridPane, boolean isGridDisable ) {
@@ -317,7 +250,7 @@ public class ClientController {
     public void close() {
         if( isConnectionHandlerThreadUp && isMsgHandlerThreadUp ) {
             connectionHandler.closeSocket();
-            msgHandlerThread.interrupt();
+            msgHandler.interrupt();
             connectionHandler.interrupt();
             logger.info("connectionHandler interrupted");
         }
