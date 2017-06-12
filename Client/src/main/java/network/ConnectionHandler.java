@@ -1,6 +1,6 @@
-package Network;
+package network;
 
-import Protocol.Msg;
+import protocol.Msg;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.IOException;
@@ -14,10 +14,12 @@ public class ConnectionHandler extends Thread {
     private Socket socket;
     private ObjectOutputStream toServer;
     private ObjectInputStream fromServer;
-    private ArrayBlockingQueue<Msg> gameMessages;
+    private ArrayBlockingQueue<Msg> messagesReceived, messagesToSent;
 
-    public ConnectionHandler(String address, int port, ArrayBlockingQueue<Msg> gameMessages) {
-        this.gameMessages = gameMessages;
+    public ConnectionHandler(String address, int port) {
+        this.messagesReceived = new ArrayBlockingQueue<Msg>(10);
+        this.messagesToSent = new ArrayBlockingQueue<Msg>(10);
+
 
         try {
             socket = new Socket(address, port);
@@ -29,7 +31,11 @@ public class ConnectionHandler extends Thread {
         }
     }
 
-    public void send(Msg msgToServer) {
+    public ArrayBlockingQueue<Msg> getMessagesReceived() {
+        return messagesReceived;
+    }
+
+    private void send(Msg msgToServer) {
         try {
             toServer.writeObject(msgToServer);
         } catch (IOException e) {
@@ -38,16 +44,24 @@ public class ConnectionHandler extends Thread {
         logger.info("Message sent: " + msgToServer.getMsgType());
     }
 
+    public void addMessageToSend(Msg msgToServer) {
+        messagesToSent.add(msgToServer);
+    }
+
     @Override
     public void run() {
-        this.setName("Network.ConnectionHandler");
+        this.setName("network.ConnectionHandler");
 
         try {
-            Msg msgFromServer;
+            Msg msgFromServer, msgToServer;
             while((msgFromServer = (Msg) fromServer.readObject()) != null ) {
                 logger.info("Received message: " + msgFromServer.getMsgType());
-                gameMessages.add(msgFromServer);
+                messagesReceived.add(msgFromServer);
 
+                while( (msgToServer = messagesToSent.take()) != null ) {
+                    send(msgToServer);
+                    break;
+                }
             }
         }
         catch (Exception e) {

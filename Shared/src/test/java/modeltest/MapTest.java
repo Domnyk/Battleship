@@ -1,11 +1,11 @@
-package ModelTest;
+package modeltest;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import Model.*;
-import Model.Coordinates;
+import model.*;
+import model.Coordinates;
 import org.junit.Test;
 
 public class MapTest {

@@ -1,4 +1,4 @@
-package Protocol;
+package protocol;
 
 import java.io.Serializable;
 
@@ -8,6 +8,7 @@ public enum MsgType implements Serializable {
     PLACE_SHIPS,
     SHIPS_PLACED,
     WAIT_FOR_MOVE,
+    WAITING,
     MAKE_MOVE,
     SHOT_PERFORMED,
     HIT_MAKE_MOVE,

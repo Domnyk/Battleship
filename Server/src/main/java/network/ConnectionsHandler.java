@@ -1,12 +1,12 @@
-package Network;
+package network;
 
-import Model.Coordinates;
-import Model.FieldState;
-import Protocol.Msg;
-import Protocol.MsgType;
+import model.Coordinates;
+import model.FieldState;
+import protocol.Msg;
+import protocol.MsgType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import Model.Map;
+import model.Map;
 import java.util.Random;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -62,6 +62,12 @@ public final class ConnectionsHandler extends Thread {
         }
     }
 
+    /**
+     * Handles message received from server
+     * @param clientMsg
+     *
+     * WAITING message doesn't need to be handled. It is here to completeness of all messages received by the server
+     */
     public void handleMessage(Msg clientMsg) {
         switch (clientMsg.getMsgType()) {
             case ID_IS_SET:
@@ -70,6 +76,9 @@ public final class ConnectionsHandler extends Thread {
 
             case SHIPS_PLACED:
                 handle_ships_placed(clientMsg);
+                break;
+
+            case WAITING:
                 break;
 
             case SHOT_PERFORMED:
@@ -129,6 +138,10 @@ public final class ConnectionsHandler extends Thread {
             answer.setMsgType(MsgType.WAIT_FOR_MOVE);
             send(answer);
         }
+    }
+
+    private void handle_waiting() {
+
     }
 
     private void handle_shot_performed(Msg clientMsg) {

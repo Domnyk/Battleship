@@ -1,12 +1,12 @@
-package Network;
+package network;
 
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.ArrayBlockingQueue;
-import Protocol.MsgType;
+import protocol.MsgType;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-import Protocol.Msg;
+import protocol.Msg;
 
 public class ConnectionThread extends Thread {
     private int id;

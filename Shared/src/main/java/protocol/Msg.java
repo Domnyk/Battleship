@@ -1,7 +1,7 @@
-package Protocol;
+package protocol;
 
-import Model.Coordinates;
-import Model.Map;
+import model.Coordinates;
+import model.Map;
 
 import java.io.Serializable;
 
@@ -30,7 +30,7 @@ public class Msg implements Serializable {
         return dataObj;
     }
 
-    public Msg(MsgType msgType, Integer playerID, Model.Map map) {
+    public Msg(MsgType msgType, Integer playerID, model.Map map) {
         this.msgType = msgType;
         this.playerID = playerID;
         this.dataObj = new Map(map);

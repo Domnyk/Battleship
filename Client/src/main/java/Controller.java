@@ -1,9 +1,9 @@
-import Model.FieldState;
-import Model.Player;
-import Model.Coordinates;
-import Network.ConnectionHandler;
-import Protocol.Msg;
-import Protocol.MsgType;
+import model.FieldState;
+import model.Player;
+import model.Coordinates;
+import network.ConnectionHandler;
+import protocol.Msg;
+import protocol.MsgType;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -13,22 +13,20 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.Node;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.util.concurrent.ArrayBlockingQueue;
 
 public class Controller {
     private static final Logger logger = LogManager.getLogger("Client");
     private Player player;
     private int shipLength, currentNumOfFieldsTaken, numOfShipsPlaced;
-    private ConnectionHandler connectionHandlerThread;
+    private ConnectionHandler connectionHandler;
     private Thread msgHandlerThread;
     private boolean isConnectionHandlerThreadUp, isMsgHandlerThreadUp;
-    private ArrayBlockingQueue<Msg> gameMessages;
 
     private Task msgHandler = new Task<Void>() {
         @Override public Void call() throws Exception {
             logger.info("Task is up");
             Msg msg;
-            while( (msg = gameMessages.take()) != null)
+            while( (msg = connectionHandler.getMessagesReceived().take()) != null)
             {
                 Coordinates coordinates = (Coordinates)msg.getDataObj();
                 Integer row = null;
@@ -109,19 +107,19 @@ public class Controller {
 
     @FXML
     private void initialize() {
-        finishedButton.setDisable(true);
+        // TODO - SET IT TO FALSE WHEN PUT ON GITHUB
+        finishedButton.setDisable(false);
         shipsMenuBar.setDisable(true);
         status.setText("Not connected");
 
         currentNumOfFieldsTaken = 0;
         numOfShipsPlaced = 0;
-        this.gameMessages = new ArrayBlockingQueue<Msg>(10);
     }
 
     @FXML
     private void handleFinishedButtonFired() {
         Msg answer = new Msg(MsgType.SHIPS_PLACED, player.getPlayerId(), player.getPlayerMap());
-        connectionHandlerThread.send(answer);
+        connectionHandler.addMessageToSend(answer);
 
         status.setText("Wait for server response");
         finishedButton.setDisable(true);
@@ -136,8 +134,8 @@ public class Controller {
         String address = serverAddress.getText();
         int port = Integer.parseInt(serverPort.getText());
 
-        connectionHandlerThread = new ConnectionHandler(address, port, gameMessages);
-        connectionHandlerThread.start();
+        connectionHandler = new ConnectionHandler(address, port);
+        connectionHandler.start();
 
         msgHandlerThread = new Thread(msgHandler);
         msgHandlerThread.setName("msgHandlerThread");
@@ -169,7 +167,7 @@ public class Controller {
         Coordinates shotCoordinates = new Coordinates(GridPane.getRowIndex(node), GridPane.getColumnIndex(node));
         Msg shotMsg = new Msg(MsgType.SHOT_PERFORMED, player.getPlayerId(), shotCoordinates);
 
-        connectionHandlerThread.send(shotMsg);
+        connectionHandler.addMessageToSend(shotMsg);
     }
 
     @FXML
@@ -199,7 +197,7 @@ public class Controller {
 
     private void handleSetId(Msg msg) {
         player.setPlayerId(msg.getPlayerID());
-        connectionHandlerThread.send(new Msg(MsgType.ID_IS_SET, msg.getPlayerID()));
+        connectionHandler.addMessageToSend(new Msg(MsgType.ID_IS_SET, msg.getPlayerID()));
 
         Platform.runLater(() -> {
             status.setText("Waiting for game to begin");
@@ -222,6 +220,8 @@ public class Controller {
     }
 
     private void handleWaitForMove() {
+        connectionHandler.addMessageToSend(new Msg(MsgType.WAITING, player.getPlayerId()));
+
         Platform.runLater(() -> {
             status.setText("Wait for move");
         });
@@ -236,6 +236,8 @@ public class Controller {
     }
 
     private void handleHitWaitForMove(Integer row, Integer col) {
+        connectionHandler.addMessageToSend(new Msg(MsgType.WAITING, player.getPlayerId()));
+
         Platform.runLater(() -> {
             status.setText("You have hit the enemy! Good job");
             enemyGrid.getChildren().get(row*10+col).setStyle("-fx-background-color: red");
@@ -252,6 +254,8 @@ public class Controller {
     }
 
     private void handleMissWaitForMove(Integer row, Integer col) {
+        connectionHandler.addMessageToSend(new Msg(MsgType.WAITING, player.getPlayerId()));
+
         Platform.runLater(() -> {
             status.setText("You didn't hit. Wait for move");
             enemyGrid.getChildren().get(row*10+col).setStyle("-fx-background-color: black");
@@ -312,10 +316,10 @@ public class Controller {
 
     public void close() {
         if( isConnectionHandlerThreadUp && isMsgHandlerThreadUp ) {
-            connectionHandlerThread.closeSocket();
+            connectionHandler.closeSocket();
             msgHandlerThread.interrupt();
-            connectionHandlerThread.interrupt();
-            logger.info("connectionHandlerThread interrupted");
+            connectionHandler.interrupt();
+            logger.info("connectionHandler interrupted");
         }
     }
 }

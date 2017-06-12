@@ -1,3 +1,4 @@
+import network.GameServer;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import javafx.fxml.FXML;
@@ -6,12 +7,13 @@ import javafx.scene.text.*;
 import javafx.scene.paint.Paint;
 import javafx.event.ActionEvent;
 
-import Network.GameServer;
-
-
 public class ServerController {
     private static final Logger logger = LogManager.getLogger("Server");
     private  GameServer gs;
+
+    public ServerController() {
+
+    }
 
     @FXML
     private Text serverStatus;

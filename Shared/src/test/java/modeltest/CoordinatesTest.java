@@ -1,8 +1,8 @@
-package ModelTest;
+package modeltest;
 
 import static org.junit.Assert.assertEquals;
 
-import Model.Coordinates;
+import model.Coordinates;
 import org.junit.Test;
 
 public class CoordinatesTest {

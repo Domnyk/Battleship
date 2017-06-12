@@ -1,7 +1,7 @@
 
-import Model.Coordinates;
-import Model.Map;
-import Protocol.*;
+import model.Coordinates;
+import model.Map;
+import protocol.*;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
