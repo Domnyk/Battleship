@@ -131,20 +131,4 @@ public class MapTest {
         assertEquals(1, map.countFields(FieldState.HIT));
         assertEquals(0, map.countFields(FieldState.SHIP));
     }
-
-    @Test
-    public void placeShipTest() {
-        Map map = new Map();
-        int[] firstCoordinates = {0, 0};
-        int[] lastCoordinates = {0, 4};
-
-        map.placeShip(firstCoordinates, lastCoordinates);
-        for (int i = 0; i < 5; ++i) {
-            assertEquals(FieldState.SHIP, map.getFieldState(0, i));
-        }
-
-        assertEquals(map.countFields(FieldState.EMPTY), 95);
-        assertEquals(map.countFields(FieldState.SHOT),0);
-        assertEquals(map.countFields(FieldState.HIT), 0);
-    }
 }

@@ -76,19 +76,6 @@ public class Map implements Serializable {
         return null;
     }
 
-    public void placeShip(int[] firstCoordinates, int[] lastCoordinates) {
-        int minRow = Math.min(firstCoordinates[0], lastCoordinates[0]);
-        int maxRow = Math.max(firstCoordinates[0], lastCoordinates[0]);
-        int minCol = Math.min(firstCoordinates[1], lastCoordinates[1]);
-        int maxCol = Math.max(firstCoordinates[1], lastCoordinates[1]);
-
-        for (int i = minRow; i <= maxRow; ++i) {
-            for (int j = minCol; j <= maxCol; ++j) {
-                setFieldState(i, j, FieldState.SHIP);
-            }
-        }
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
