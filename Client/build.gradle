@@ -26,4 +26,5 @@ dependencies {
 
 jfx {
     mainClass = 'Main'
+    jfxMainAppJarName = 'BattleshipClient.jar'
 }

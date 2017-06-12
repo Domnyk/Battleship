@@ -11,7 +11,7 @@ buildscript {
 
 apply plugin: 'java'
 apply plugin: 'application'
-//apply plugin: 'javafx-gradle-plugin'
+apply plugin: 'javafx-gradle-plugin'
 
 repositories {
     mavenLocal()
@@ -25,8 +25,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
-mainClassName = 'Main'
-
-/*jfx {
+jfx {
     mainClass = 'Main'
-}*/
+    jfxMainAppJarName = 'BattleshipServer.jar'
+}

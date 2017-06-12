@@ -3,6 +3,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import Model.*;
+import Model.Coordinates;
 import org.junit.Test;
 
 public class MapTest {
@@ -15,6 +16,17 @@ public class MapTest {
                 assertEquals(map.getFieldState(i, j), FieldState.EMPTY);
             }
         }
+    }
+
+    @Test
+    public void copyConstructorTest() {
+        Map original = new Map();
+
+        original.setFieldState(0,0, FieldState.SHIP);
+        Map copy = new Map(original);
+
+        assertEquals(false, original == copy);
+        assertEquals(true, original.equals(copy));
     }
 
     @Test
@@ -95,7 +107,7 @@ public class MapTest {
     public void updateMapWithShotTestWithEmptyToShoted() {
         Map map = new Map();
 
-        int[] coordinates = {0, 0};
+        Coordinates coordinates = new Coordinates(0, 0);
 
         assertEquals(false, map.updateMapWithShot(coordinates));
         assertEquals(1, map.countFields(FieldState.SHOTED));
@@ -109,7 +121,7 @@ public class MapTest {
         Map map = new Map();
         map.setFieldState(0, 0, FieldState.SHIP);
 
-        int[] coordinates = {0, 0};
+        Coordinates coordinates = new Coordinates(0, 0);
 
         assertEquals(true, map.updateMapWithShot(coordinates));
         assertEquals(0, map.countFields(FieldState.SHOTED));

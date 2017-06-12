@@ -39,16 +39,16 @@ public class ServerController {
             startServerButton.setDisable(true);
 
             String portNumberString = portNumber.getText();
-            int portNumber = 4444;
+            int port;
 
             try {
-                portNumber = Integer.parseInt(portNumberString);
+                port = Integer.parseInt(portNumberString);
             }
             catch(NumberFormatException e) {
                 logger.error("Wrong port number. Using default port number: 4444");
+                port = 4444;
             }
-
-            gs = new GameServer(portNumber);
+            gs = new GameServer(port);
             gs.start();
 
             serverStatus.setText("Server is running");

@@ -1,5 +1,6 @@
 package Network;
 
+import Model.Coordinates;
 import Model.FieldState;
 import Model.GameServerState;
 import Protocol.Msg;
@@ -123,10 +124,10 @@ public final class ConnectionsHandler extends Thread {
         if( gameServerState == GameServerState.WAIT_FOR_FIRST_READY ) {
             gameServerState = GameServerState.WAIT_FOR_SECOND_READY;
 
-
-            answer.setMsgType(MsgType.WAIT_FOR_SECOND_READY);
-            answer.setPlayerID(clientMsg.getPlayerID());
-            send(answer);
+            // TODO - CAREFUL
+            //answer.setMsgType(MsgType.WAIT_FOR_SECOND_READY);
+            //answer.setPlayerID(clientMsg.getPlayerID());
+            //send(answer);
         }
         else {
             gameServerState = GameServerState.WAIT_FOR_MOVE;
@@ -150,8 +151,9 @@ public final class ConnectionsHandler extends Thread {
 
         int activePlayerId = clientMsg.getPlayerID();
         int waitingPlayerId = (activePlayerId+1)%2;
+        Coordinates coordinates = new Coordinates((Coordinates) clientMsg.getDataObj());
 
-        int[] coordinates = (int[]) clientMsg.getDataObj();
+        logger.info("ROW: " + coordinates.getRow() + ", COL: " + coordinates.getCol());
         Boolean isHit = playersMaps.get(waitingPlayerId).updateMapWithShot(coordinates);
 
         boolean isLoser = (playersMaps.get(waitingPlayerId).countFields(FieldState.SHIP) == 0);
@@ -163,20 +165,25 @@ public final class ConnectionsHandler extends Thread {
 
             answer = new Msg(MsgType.LOSE, waitingPlayerId, coordinates);
             send(answer);
+
+            return;
         }
-        else {
-            // GameServerState is WAIT_FOR_MOVE and it stays that way
-            MsgType msgType = isHit ? MsgType.SHOT_HIT : MsgType.SHOT_MISS;
-
-            answer = new Msg(msgType, activePlayerId, coordinates);
-            sendBroadcast(answer);
-
-            answer = new Msg(MsgType.MAKE_MOVE, waitingPlayerId);
+        // GameServerState is WAIT_FOR_MOVE and it stays that way
+        if( isHit ) {
+            answer = new Msg(MsgType.HIT_WAIT_FOR_MOVE, activePlayerId, coordinates);
             send(answer);
 
-            answer = new Msg(MsgType.WAIT_FOR_MOVE, activePlayerId);
+            answer = new Msg(MsgType.HIT_MAKE_MOVE, waitingPlayerId, coordinates);
             send(answer);
+
+            return;
         }
+
+        answer = new Msg(MsgType.MISS_WAIT_FOR_MOVE, activePlayerId, coordinates);
+        send(answer);
+
+        answer = new Msg(MsgType.MISS_MAKE_MOVE, waitingPlayerId, coordinates);
+        send(answer);
     }
 
 }

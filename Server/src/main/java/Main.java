@@ -1,13 +1,4 @@
-import Network.GameServer;
-
-public class Main {
-    public static void main(String[] args) {
-        GameServer gs = new GameServer(1234);
-        gs.start();
-    }
-}
-
-/*import javafx.application.Platform;
+import javafx.application.Platform;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -54,4 +45,4 @@ public class Main extends Application {
     public static void main(String[] args) {
         launch(args);
     }
-}*/
+}

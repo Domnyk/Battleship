@@ -1,21 +1,28 @@
 package Model;
 
 import Protocol.PlayerState;
+import javafx.beans.InvalidationListener;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableObjectValue;
 
 public class Player {
-    private Map playerMap, enemyMap;
+    Map playerMap, enemyMap;
     private Integer playerId;
     private PlayerState playerState;
 
-    public Player(Map playerMap, Map enemyMap, Integer playerId, PlayerState playerState) {
+    /*public Player(Map playerMap, Map enemyMap, Integer playerId, PlayerState playerState) {
         this.playerMap = playerMap;
         this.enemyMap = enemyMap;
         this.playerId = playerId;
         this.playerState = playerState;
-    }
+    }*/
 
-    public Player(int id) {
-        this(new Map(), new Map(), id, PlayerState.INIT_STATE);
+    public Player(Integer playerId) {
+        this.playerMap = new Map();
+        this.enemyMap = new Map();
+        this.playerId = playerId;
+        this.playerState = PlayerState.INIT_STATE;
+        //this(new Map(), new Map(), id, PlayerState.INIT_STATE);
     }
 
     public Map getPlayerMap() {

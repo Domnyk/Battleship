@@ -20,6 +20,16 @@ public class Map implements Serializable {
         }
     }
 
+    public Map(Map otherMap) {
+        grid = new FieldState[10][10];
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                grid[i][j] = otherMap.getFieldState(i, j);
+            }
+        }
+    }
+
     public FieldState[][] getGrid() {
         return grid;
     }
@@ -47,9 +57,9 @@ public class Map implements Serializable {
         return result;
     }
 
-    public Boolean updateMapWithShot(int[] coordinates) {
-        int row = coordinates[0];
-        int col = coordinates[1];
+    public Boolean updateMapWithShot(Coordinates coordinates) {
+        int row = coordinates.getRow();
+        int col = coordinates.getCol();
 
         FieldState fs = getFieldState(row, col);
         if( fs == FieldState.EMPTY ) {
