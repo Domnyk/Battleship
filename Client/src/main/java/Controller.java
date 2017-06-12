@@ -1,6 +1,7 @@
 import Model.FieldState;
 import Model.Player;
 import Model.Coordinates;
+import Network.ConnectionHandler;
 import Protocol.Msg;
 import Protocol.MsgType;
 import javafx.application.Platform;
@@ -12,7 +13,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.Node;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class Controller {
@@ -75,6 +75,127 @@ public class Controller {
             return null;
         }
     };
+
+    public Controller() {
+        player = new Player(null);
+        isConnectionHandlerThreadUp = false;
+        isMsgHandlerThreadUp = false;
+
+    }
+
+    @FXML
+    private GridPane yourGrid;
+
+    @FXML
+    private GridPane enemyGrid;
+
+    @FXML
+    private Label status;
+
+    @FXML
+    private TextField serverAddress;
+
+    @FXML
+    private TextField serverPort;
+
+    @FXML
+    private Button connectButton;
+
+    @FXML
+    private Button finishedButton;
+
+    @FXML
+    private MenuButton shipsMenuBar;
+
+    @FXML
+    private void initialize() {
+        finishedButton.setDisable(true);
+        shipsMenuBar.setDisable(true);
+        status.setText("Not connected");
+
+        currentNumOfFieldsTaken = 0;
+        numOfShipsPlaced = 0;
+        this.gameMessages = new ArrayBlockingQueue<Msg>(10);
+    }
+
+    @FXML
+    private void handleFinishedButtonFired() {
+        Msg answer = new Msg(MsgType.SHIPS_PLACED, player.getPlayerId(), player.getPlayerMap());
+        connectionHandlerThread.send(answer);
+
+        status.setText("Wait for server response");
+        finishedButton.setDisable(true);
+        setGridIsDisable(yourGrid, true);
+    }
+
+    @FXML
+    private void handleConnectButtonFired() {
+        serverAddress.setDisable(true);
+        serverPort.setDisable(true);
+
+        String address = serverAddress.getText();
+        int port = Integer.parseInt(serverPort.getText());
+
+        connectionHandlerThread = new ConnectionHandler(address, port, gameMessages);
+        connectionHandlerThread.start();
+
+        msgHandlerThread = new Thread(msgHandler);
+        msgHandlerThread.setName("msgHandlerThread");
+        msgHandlerThread.start();
+
+        isConnectionHandlerThreadUp = true;
+        isMsgHandlerThreadUp = true;
+    };
+
+    @FXML
+    private void handleMenuItemSelected(ActionEvent event) {
+        status.setText("Place ship");
+        shipsMenuBar.setDisable(true);
+
+        setGridIsDisable(yourGrid, false);
+
+        MenuItem menuItem = (MenuItem) event.getSource();
+        menuItem.setDisable(true);
+
+        shipLength = switchMenuItem(menuItem);
+    }
+
+    @ FXML
+    private void handleEnemyGridCellButtonFired(ActionEvent event) {
+        setGridIsDisable(enemyGrid, true);
+
+        Node node = (Node) event.getSource();
+
+        Coordinates shotCoordinates = new Coordinates(GridPane.getRowIndex(node), GridPane.getColumnIndex(node));
+        Msg shotMsg = new Msg(MsgType.SHOT_PERFORMED, player.getPlayerId(), shotCoordinates);
+
+        connectionHandlerThread.send(shotMsg);
+    }
+
+    @FXML
+    private void handleYourGridCellButtonFired(ActionEvent event) {
+        Node node = (Node) event.getSource();
+        node.setDisable(true);
+        node.setStyle("-fx-background-color: deepskyblue");
+        ++currentNumOfFieldsTaken;
+
+        logger.info("Curr: " + currentNumOfFieldsTaken + ", numOfFields: " + shipLength);
+
+        player.getPlayerMap().setFieldState(GridPane.getRowIndex(node), GridPane.getColumnIndex(node), FieldState.SHIP);
+
+        if ( currentNumOfFieldsTaken == shipLength) {
+            currentNumOfFieldsTaken = 0;
+            ++numOfShipsPlaced;
+
+            shipsMenuBar.setDisable(false);
+            setGridIsDisable(yourGrid, true);
+
+            if( numOfShipsPlaced == 5 ) {
+                shipsMenuBar.setDisable(true);
+                finishedButton.setDisable(false);
+            }
+        }
+    }
 
     private void handleSetId(Msg msg) {
         player.setPlayerId(msg.getPlayerID());
@@ -156,92 +277,6 @@ public class Controller {
         });
     }
 
-
-
-    @FXML
-    private GridPane yourGrid;
-
-    @FXML
-    private GridPane enemyGrid;
-
-    @FXML
-    private Label status;
-
-    @FXML
-    private TextField serverAddress;
-
-    @FXML
-    private TextField serverPort;
-
-    @FXML
-    private Button connectButton;
-
-    @FXML
-    private Button finishedButton;
-
-    @FXML
-    private MenuButton shipsMenuBar;
-
-    @FXML
-    private void initialize() {
-        finishedButton.setDisable(true);
-        shipsMenuBar.setDisable(true);
-        status.setText("Not connected");
-
-        currentNumOfFieldsTaken = 0;
-        numOfShipsPlaced = 0;
-        this.gameMessages = new ArrayBlockingQueue<Msg>(10);
-    }
-
-    @FXML
-    private void handleFinishedButtonFired() {
-        Msg answer = new Msg(MsgType.SHIPS_PLACED, player.getPlayerId(), player.getPlayerMap());
-        connectionHandlerThread.send(answer);
-
-        status.setText("Wait for server response");
-        finishedButton.setDisable(true);
-        setGridIsDisable(yourGrid, true);
-    }
-
-    @FXML
-    private void handleConnectButtonFired() {
-        serverAddress.setDisable(true);
-        serverPort.setDisable(true);
-
-        // TODO - parsowanie adresu i portu
-        String address = serverAddress.getText();
-        int port = Integer.parseInt(serverPort.getText());
-
-        connectionHandlerThread = new ConnectionHandler(address, port, player, gameMessages);
-        connectionHandlerThread.start();
-
-        msgHandlerThread = new Thread(msgHandler);
-        msgHandlerThread.setName("msgHandlerThread");
-        msgHandlerThread.start();
-
-        isConnectionHandlerThreadUp = true;
-        isMsgHandlerThreadUp = true;
-    };
-
-    @FXML
-    private void handleMenuItemSelected(ActionEvent event) {
-        status.setText("Place ship");
-        shipsMenuBar.setDisable(true);
-
-        setGridIsDisable(yourGrid, false);
-
-        MenuItem menuItem = (MenuItem) event.getSource();
-        menuItem.setDisable(true);
-
-        shipLength = switchMenuItem(menuItem);
-    }
-
-    public Controller() {
-        player = new Player(null);
-        isConnectionHandlerThreadUp = false;
-        isMsgHandlerThreadUp = false;
-
-    }
     private int switchMenuItem(MenuItem menuItem) {
         int numOfFieldsForShip = 0;
 
@@ -267,44 +302,6 @@ public class Controller {
         }
 
         return numOfFieldsForShip;
-    }
-
-    @FXML
-    private void handleYourGridCellButtonFired(ActionEvent event) {
-        Node node = (Node) event.getSource();
-        node.setDisable(true);
-        node.setStyle("-fx-background-color: deepskyblue");
-        ++currentNumOfFieldsTaken;
-
-        logger.info("Curr: " + currentNumOfFieldsTaken + ", numOfFields: " + shipLength);
-
-        player.getPlayerMap().setFieldState(GridPane.getRowIndex(node), GridPane.getColumnIndex(node), FieldState.SHIP);
-
-        if ( currentNumOfFieldsTaken == shipLength) {
-            currentNumOfFieldsTaken = 0;
-            ++numOfShipsPlaced;
-
-            shipsMenuBar.setDisable(false);
-            setGridIsDisable(yourGrid, true);
-
-            if( numOfShipsPlaced == 5 ) {
-                shipsMenuBar.setDisable(true);
-                finishedButton.setDisable(false);
-            }
-        }
-    }
-
-    // TODO - here I need to change player's state
-    @ FXML
-    private void handleEnemyGridCellButtonFired(ActionEvent event) {
-        setGridIsDisable(enemyGrid, true);
-
-        Node node = (Node) event.getSource();
-
-        Coordinates shotCoordinates = new Coordinates(GridPane.getRowIndex(node), GridPane.getColumnIndex(node));
-        Msg shotMsg = new Msg(MsgType.SHOT_PERFORMED, player.getPlayerId(), shotCoordinates);
-
-        connectionHandlerThread.send(shotMsg);
     }
 
     private void setGridIsDisable(GridPane gridPane, boolean isGridDisable ) {

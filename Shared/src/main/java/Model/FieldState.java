@@ -2,9 +2,6 @@ package Model;
 
 import java.io.Serializable;
 
-/**
- * Enum type which describes state of a field
- */
 public enum FieldState implements Serializable {
     /**
      * Empty field
@@ -12,17 +9,17 @@ public enum FieldState implements Serializable {
     EMPTY,
 
     /**
-     * Field2 on which a ship has been placed
+     * Field on which a ship has been placed
      */
     SHIP,
 
     /**
-     * Empty field which has been shoted
+     * Empty field which has been shot
      */
-    SHOTED,
+    SHOT,
 
     /**
-     * Ship field which has been shoted
+     * Ship field which has been shot
      */
     HIT
 }

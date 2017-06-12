@@ -3,8 +3,6 @@ package Network;
 import java.io.*;
 import java.net.*;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import Protocol.MsgType;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +17,7 @@ public class ConnectionThread extends Thread {
 
     private static final Logger logger = LogManager.getLogger("Server");
 
-    public ConnectionThread(int id, Socket clientSocket, ArrayBlockingQueue<Msg> gameMessages) {
+    ConnectionThread(int id, Socket clientSocket, ArrayBlockingQueue<Msg> gameMessages) {
         this.id = id;
         this.gameMessages = gameMessages;
         this.clientSocket = clientSocket;
@@ -33,17 +31,13 @@ public class ConnectionThread extends Thread {
         }
     }
 
-    public void write(Msg msg) {
+    void write(Msg msg) {
         try {
             toClient.writeObject(msg);
         }
         catch (IOException e) {
             logger.error("Exception during writing to client stream");
         }
-    }
-
-    Socket getClientSocket() {
-        return clientSocket;
     }
 
     void closeSocket() {
@@ -62,7 +56,7 @@ public class ConnectionThread extends Thread {
         write(new Msg(MsgType.SET_ID, id));
 
         try {
-            Msg msgFromClient, msgToClient;
+            Msg msgFromClient;
             while((msgFromClient = (Msg) fromClient.readObject()) != null) {
                 gameMessages.add(msgFromClient);
             }

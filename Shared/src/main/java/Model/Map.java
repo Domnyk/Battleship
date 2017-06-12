@@ -54,6 +54,7 @@ public class Map implements Serializable {
                     ++result;
             }
         }
+
         return result;
     }
 
@@ -63,7 +64,7 @@ public class Map implements Serializable {
 
         FieldState fs = getFieldState(row, col);
         if( fs == FieldState.EMPTY ) {
-            setFieldState(row, col, FieldState.SHOTED);
+            setFieldState(row, col, FieldState.SHOT);
             return false;
         }
 
@@ -71,6 +72,7 @@ public class Map implements Serializable {
             setFieldState(row, col, FieldState.HIT);
             return true;
         }
+
         return null;
     }
 

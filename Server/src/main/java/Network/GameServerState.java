@@ -1,4 +1,4 @@
-package Model;
+package Network;
 
 public enum GameServerState {
     INIT_STATE,

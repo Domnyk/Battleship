@@ -2,13 +2,11 @@ package Network;
 
 import Model.Coordinates;
 import Model.FieldState;
-import Model.GameServerState;
 import Protocol.Msg;
 import Protocol.MsgType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import Model.Map;
-
 import java.util.Random;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -19,19 +17,13 @@ public final class ConnectionsHandler extends Thread {
     private ConcurrentHashMap<Integer, ConnectionThread> connections;
     private GameServerState gameServerState;
     private HashMap<Integer, Map> playersMaps;
-
-
     private static final Logger logger = LogManager.getLogger("Server");
 
-    public ConcurrentHashMap<Integer, ConnectionThread> getConnections() {
-        return connections;
-    }
-
-    public ArrayBlockingQueue<Msg> getGameMessages() {
+    ArrayBlockingQueue<Msg> getGameMessages() {
         return gameMessages;
     }
 
-    public ConnectionsHandler() {
+    ConnectionsHandler() {
         this.setName("ConnectionsHandler");
 
         this.gameMessages = new ArrayBlockingQueue<Msg>(10);
@@ -52,8 +44,6 @@ public final class ConnectionsHandler extends Thread {
             connection.interrupt();
         });
     }
-
-
 
     @Override
     public void run() {
@@ -123,11 +113,6 @@ public final class ConnectionsHandler extends Thread {
 
         if( gameServerState == GameServerState.WAIT_FOR_FIRST_READY ) {
             gameServerState = GameServerState.WAIT_FOR_SECOND_READY;
-
-            // TODO - CAREFUL
-            //answer.setMsgType(MsgType.WAIT_FOR_SECOND_READY);
-            //answer.setPlayerID(clientMsg.getPlayerID());
-            //send(answer);
         }
         else {
             gameServerState = GameServerState.WAIT_FOR_MOVE;
@@ -147,7 +132,7 @@ public final class ConnectionsHandler extends Thread {
     }
 
     private void handle_shot_performed(Msg clientMsg) {
-        Msg answer = new Msg();
+        Msg answer;
 
         int activePlayerId = clientMsg.getPlayerID();
         int waitingPlayerId = (activePlayerId+1)%2;
@@ -168,6 +153,7 @@ public final class ConnectionsHandler extends Thread {
 
             return;
         }
+
         // GameServerState is WAIT_FOR_MOVE and it stays that way
         if( isHit ) {
             answer = new Msg(MsgType.HIT_WAIT_FOR_MOVE, activePlayerId, coordinates);

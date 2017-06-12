@@ -1,3 +1,5 @@
+package ModelTest;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -79,7 +81,7 @@ public class MapTest {
         Map same1 = new Map();
         Map same2 = new Map();
         Map diff = new Map();
-        diff.setFieldState(0, 0, FieldState.SHOTED);
+        diff.setFieldState(0, 0, FieldState.SHOT);
 
         assertEquals(same1, same1);
         assertEquals(same1, same2);
@@ -92,10 +94,10 @@ public class MapTest {
 
         map.setFieldState(0, 0, FieldState.SHIP);
         map.setFieldState(0, 1, FieldState.SHIP);
-        map.setFieldState(0, 2, FieldState.SHOTED);
+        map.setFieldState(0, 2, FieldState.SHOT);
 
         int countShip = map.countFields(FieldState.SHIP);
-        int countShoted = map.countFields(FieldState.SHOTED);
+        int countShoted = map.countFields(FieldState.SHOT);
         int countEmpty = map.countFields(FieldState.EMPTY);
 
         assertEquals(2, countShip);
@@ -110,7 +112,7 @@ public class MapTest {
         Coordinates coordinates = new Coordinates(0, 0);
 
         assertEquals(false, map.updateMapWithShot(coordinates));
-        assertEquals(1, map.countFields(FieldState.SHOTED));
+        assertEquals(1, map.countFields(FieldState.SHOT));
         assertEquals(99, map.countFields(FieldState.EMPTY));
         assertEquals(0, map.countFields(FieldState.HIT));
         assertEquals(0, map.countFields(FieldState.SHIP));
@@ -124,7 +126,7 @@ public class MapTest {
         Coordinates coordinates = new Coordinates(0, 0);
 
         assertEquals(true, map.updateMapWithShot(coordinates));
-        assertEquals(0, map.countFields(FieldState.SHOTED));
+        assertEquals(0, map.countFields(FieldState.SHOT));
         assertEquals(99, map.countFields(FieldState.EMPTY));
         assertEquals(1, map.countFields(FieldState.HIT));
         assertEquals(0, map.countFields(FieldState.SHIP));
@@ -142,7 +144,7 @@ public class MapTest {
         }
 
         assertEquals(map.countFields(FieldState.EMPTY), 95);
-        assertEquals(map.countFields(FieldState.SHOTED),0);
+        assertEquals(map.countFields(FieldState.SHOT),0);
         assertEquals(map.countFields(FieldState.HIT), 0);
     }
 }
