@@ -1,19 +1,19 @@
 package controller;
 
-import model.FieldState;
-import model.Player;
-import model.Coordinates;
-import network.ConnectionHandler;
-import protocol.Msg;
-import protocol.MsgType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.Node;
+import model.Coordinates;
+import model.FieldState;
+import model.Player;
+import network.ConnectionHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import protocol.Msg;
+import protocol.MsgType;
 
 import java.util.HashMap;
 
@@ -60,7 +60,6 @@ public class Controller {
 
     @FXML
     private void initialize() {
-        // TODO - SET IT TO FALSE WHEN PUT ON GITHUB
         finishedButton.setDisable(true);
         shipsMenuBar.setDisable(true);
         status.setText("Not connected");
@@ -72,7 +71,6 @@ public class Controller {
     @FXML
     private void handleFinishedButtonFired() {
         Msg answer = new Msg(MsgType.SHIPS_PLACED, player.getPlayerId(), player.getPlayerMap());
-        //connectionHandler.getMessagesToSend().add()(answer);
         connectionHandler.getMessagesToSend().add(answer);
 
         status.setText("Wait for server response");
@@ -92,7 +90,9 @@ public class Controller {
 
         msgHandler = new MsgHandler(this);
         msgHandler.start();
-    };
+    }
+
+    ;
 
     @FXML
     private void handleMenuItemSelected(ActionEvent event) {
@@ -107,7 +107,7 @@ public class Controller {
         shipLength = getShipLength(menuItem);
     }
 
-    @ FXML
+    @FXML
     private void handleEnemyGridCellButtonFired(ActionEvent event) {
         setGridIsDisable(enemyGrid, true);
 
@@ -130,14 +130,14 @@ public class Controller {
 
         player.getPlayerMap().setFieldState(GridPane.getRowIndex(node), GridPane.getColumnIndex(node), FieldState.SHIP);
 
-        if ( currentNumOfFieldsTaken == shipLength) {
+        if (currentNumOfFieldsTaken == shipLength) {
             currentNumOfFieldsTaken = 0;
             ++numOfShipsPlaced;
 
             shipsMenuBar.setDisable(false);
             setGridIsDisable(yourGrid, true);
 
-            if( numOfShipsPlaced == 5 ) {
+            if (numOfShipsPlaced == 5) {
                 shipsMenuBar.setDisable(true);
                 finishedButton.setDisable(false);
             }
@@ -178,24 +178,24 @@ public class Controller {
 
     void handleHitMakeMove(Integer row, Integer col) {
         updateGUI("You have been shot! Your turn", yourGrid, enemyGrid, false, "red",
-                    row, col);
+                row, col);
     }
 
     void handleHitWaitForMove(Integer row, Integer col) {
         connectionHandler.getMessagesToSend().add(new Msg(MsgType.WAITING, player.getPlayerId()));
         updateGUI("You have hit the enemy! Good job", enemyGrid, enemyGrid, true, "red",
-                    row, col);
+                row, col);
     }
 
     void handleMissMakeMove(Integer row, Integer col) {
         updateGUI("Enemy didn't hit you. Your move", yourGrid, enemyGrid, false, "black",
-                    row, col);
+                row, col);
     }
 
     void handleMissWaitForMove(Integer row, Integer col) {
         connectionHandler.getMessagesToSend().add(new Msg(MsgType.WAITING, player.getPlayerId()));
         updateGUI("You didn't hit. Wait for move", enemyGrid, enemyGrid, true, "black",
-                    row, col);
+                row, col);
     }
 
     void handleLose(Integer row, Integer col) {
@@ -207,17 +207,16 @@ public class Controller {
     }
 
     /**
-     *
-     * @param statusVal Text which will appear in status TextField
-     * @param gridToUpdate Grid which will be updated with a shot result
+     * @param statusVal             Text which will appear in status TextField
+     * @param gridToUpdate          Grid which will be updated with a shot result
      * @param gridToChangeIsDisable Grid which status will be changed to enable or prevent shooting
-     * @param newGridState A value to which gridToChangeIsDisable will be changed
-     * @param color Color which will appear in cell of updated grid
-     * @param row Row of cell to update
-     * @param col Column of cell to update
+     * @param newGridState          A value to which gridToChangeIsDisable will be changed
+     * @param color                 Color which will appear in cell of updated grid
+     * @param row                   Row of cell to update
+     * @param col                   Column of cell to update
      */
     void updateGUI(String statusVal, GridPane gridToUpdate, GridPane gridToChangeIsDisable, boolean newGridState,
-                     String color, Integer row, Integer col) {
+                   String color, Integer row, Integer col) {
         Platform.runLater(() -> {
             status.setText(statusVal);
 
@@ -237,19 +236,20 @@ public class Controller {
         return tmp.get(menuItem.getText());
     }
 
-    private void setGridIsDisable(GridPane gridPane, boolean isGridDisable ) {
-        for(Node node: gridPane.getChildren()) {
+    private void setGridIsDisable(GridPane gridPane, boolean isGridDisable) {
+        for (Node node : gridPane.getChildren()) {
             node.setDisable(isGridDisable);
-        };
+        }
+        ;
     }
 
     public void close() {
-        if( connectionHandler != null ) {
+        if (connectionHandler != null) {
             connectionHandler.closeConnection();
         }
 
-        if( msgHandler != null && msgHandler.isAlive() ) {
-           msgHandler.interrupt();
+        if (msgHandler != null && msgHandler.isAlive()) {
+            msgHandler.interrupt();
         }
         logger.info("ConnectionHandler interrupted");
     }

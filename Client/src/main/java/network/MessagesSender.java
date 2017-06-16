@@ -26,8 +26,7 @@ public class MessagesSender extends Thread {
         try {
             toServer.writeObject(msgToServer);
             logger.info("Message sent: " + msgToServer.getMsgType());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             logger.info("Exception occurred while writing message to server");
         }
     }
@@ -38,11 +37,10 @@ public class MessagesSender extends Thread {
 
         Msg msg;
         try {
-            while ( (msg = messagesToSend.take()) != null ){
+            while ((msg = messagesToSend.take()) != null) {
                 send(msg);
             }
-        }
-        catch(InterruptedException e) {
+        } catch (InterruptedException e) {
             logger.info("Thread interrupted");
         }
     }

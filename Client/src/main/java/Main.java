@@ -41,8 +41,7 @@ public class Main extends Application {
                 Platform.exit();
                 logger.info("Close request appeared");
             });
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

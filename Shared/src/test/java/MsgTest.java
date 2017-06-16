@@ -1,8 +1,8 @@
-
 import model.Coordinates;
 import model.Map;
-import protocol.*;
 import org.junit.Test;
+import protocol.Msg;
+import protocol.MsgType;
 
 import static org.junit.Assert.assertEquals;
 

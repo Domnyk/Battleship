@@ -5,13 +5,16 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
-
-<AnchorPane fx:id="ap" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="171.0" prefWidth="422.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ServerController">
-   <children>
-      <Button fx:id="startServerButton" layoutX="300.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleStartServerButtonClicked" text="Start Server" />
-      <TextField fx:id="portNumber" layoutX="106.0" layoutY="14.0" prefHeight="30.0" prefWidth="160.0" />
-      <Label layoutX="14.0" layoutY="14.0" prefHeight="30.0" text="Port number" />
-      <Label alignment="CENTER" layoutX="14.0" layoutY="86.0" prefHeight="30.0" prefWidth="77.0" text="Status" />
-      <Text fx:id="serverStatus" fill="RED" layoutX="106.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Server not running" textAlignment="CENTER" wrappingWidth="150.0" />
-   </children>
+<AnchorPane fx:id="ap" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="171.0" prefWidth="422.0" xmlns="http://javafx.com/javafx/8.0.111"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="ServerController">
+    <children>
+        <Button fx:id="startServerButton" layoutX="300.0" layoutY="16.0" mnemonicParsing="false"
+                onAction="#handleStartServerButtonClicked" text="Start Server"/>
+        <TextField fx:id="portNumber" layoutX="106.0" layoutY="14.0" prefHeight="30.0" prefWidth="160.0"/>
+        <Label layoutX="14.0" layoutY="14.0" prefHeight="30.0" text="Port number"/>
+        <Label alignment="CENTER" layoutX="14.0" layoutY="86.0" prefHeight="30.0" prefWidth="77.0" text="Status"/>
+        <Text fx:id="serverStatus" fill="RED" layoutX="106.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0"
+              text="Server not running" textAlignment="CENTER" wrappingWidth="150.0"/>
+    </children>
 </AnchorPane>

@@ -1,15 +1,16 @@
-import network.GameServer;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.text.*;
-import javafx.scene.paint.Paint;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
+import network.GameServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class ServerController {
     private static final Logger logger = LogManager.getLogger("Server");
-    private  GameServer gs;
+    private GameServer gs;
 
     public ServerController() {
     }
@@ -36,8 +37,7 @@ public class ServerController {
 
         try {
             port = Integer.parseInt(portNumberString);
-        }
-        catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             logger.error("Wrong port number. Using default port number: 4444");
             port = 4444;
         }
@@ -52,8 +52,7 @@ public class ServerController {
         try {
             gs.closeServer();
             gs.interrupt();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.warn("Exception occurred during server close");
         }
     }

@@ -1,8 +1,9 @@
 package network;
 
-import protocol.Msg;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import protocol.Msg;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -22,8 +23,7 @@ public class ConnectionHandler {
             socket = new Socket(address, port);
             toServer = new ObjectOutputStream(socket.getOutputStream());
             fromServer = new ObjectInputStream(socket.getInputStream());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             logger.info("Error while creating socket");
         }
 
@@ -43,20 +43,19 @@ public class ConnectionHandler {
     }
 
     public void closeConnection() {
-        if( messagesReceiver.isAlive() ) {
+        if (messagesReceiver.isAlive()) {
             messagesReceiver.interrupt();
         }
 
-        if( messagesSender.isAlive() ) {
+        if (messagesSender.isAlive()) {
             messagesSender.interrupt();
         }
 
         try {
-            if( socket != null ) {
+            if (socket != null) {
                 socket.close();
             }
-        }
-        catch(IOException e) {
+        } catch (IOException e) {
             logger.info("Socket closed");
         }
     }

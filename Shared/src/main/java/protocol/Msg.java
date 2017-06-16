@@ -47,5 +47,6 @@ public class Msg implements Serializable {
         this.playerID = playerID;
     }
 
-    public Msg() {}
+    public Msg() {
+    }
 }
