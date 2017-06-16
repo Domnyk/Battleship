@@ -12,7 +12,7 @@ public class Coordinates implements Serializable {
     }
 
     public Coordinates(Coordinates coordinates) {
-        if (coordinates == null ) return;
+        if (coordinates == null) return;
 
         this.row = coordinates.getRow();
         this.col = coordinates.getCol();

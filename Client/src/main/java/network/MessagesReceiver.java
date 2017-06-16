@@ -27,12 +27,11 @@ public class MessagesReceiver extends Thread {
 
         Msg msg;
         try {
-            while( (msg = (Msg) fromServer.readObject()) != null ) {
+            while ((msg = (Msg) fromServer.readObject()) != null) {
                 messagesReceived.add(msg);
             }
-        }
-        catch (Exception e) {
-                logger.info("Exception in messages receiver");
+        } catch (Exception e) {
+            logger.info("Exception in messages receiver");
         }
     }
 }

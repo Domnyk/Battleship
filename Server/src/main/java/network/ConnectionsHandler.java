@@ -2,13 +2,14 @@ package network;
 
 import model.Coordinates;
 import model.FieldState;
-import protocol.Msg;
-import protocol.MsgType;
+import model.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import model.Map;
-import java.util.Random;
+import protocol.Msg;
+import protocol.MsgType;
+
 import java.util.HashMap;
+import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,7 +35,7 @@ public final class ConnectionsHandler extends Thread {
 
 
     void addConnection(int id, ConnectionThread connectionThread) {
-        if( !connections.contains(id) )
+        if (!connections.contains(id))
             connections.put(id, connectionThread);
     }
 
@@ -56,17 +57,15 @@ public final class ConnectionsHandler extends Thread {
                 handleMessage(msg);
                 gameMessages.poll();
             }
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             logger.info("Thread was interrupted while waiting for message to appear in blocking queue");
         }
     }
 
     /**
      * Handles message received from server
-     * @param clientMsg
      *
-     * WAITING message doesn't need to be handled. It is here to completeness of all messages received by the server
+     * @param clientMsg WAITING message doesn't need to be handled. It is here to completeness of all messages received by the server
      */
     public void handleMessage(Msg clientMsg) {
         switch (clientMsg.getMsgType()) {
@@ -94,7 +93,7 @@ public final class ConnectionsHandler extends Thread {
 
     private void sendBroadcast(Msg answer) {
         logger.info("Sending broadcast:  " + answer.getMsgType());
-        for(int i = 0; i < connections.size(); ++i)
+        for (int i = 0; i < connections.size(); ++i)
             connections.get(i).write(answer);
     }
 
@@ -102,10 +101,9 @@ public final class ConnectionsHandler extends Thread {
         Msg answer = new Msg();
         int id = clientMsg.getPlayerID();
 
-        if( gameServerState == GameServerState.INIT_STATE ) {
+        if (gameServerState == GameServerState.INIT_STATE) {
             gameServerState = GameServerState.WAIT_FOR_SECOND_PLAYER;
-        }
-        else {
+        } else {
             gameServerState = GameServerState.WAIT_FOR_FIRST_READY;
 
             answer.setMsgType(MsgType.PLACE_SHIPS);
@@ -120,10 +118,9 @@ public final class ConnectionsHandler extends Thread {
         Map clientMap = (Map) clientMsg.getDataObj();
         playersMaps.put(id, clientMap);
 
-        if( gameServerState == GameServerState.WAIT_FOR_FIRST_READY ) {
+        if (gameServerState == GameServerState.WAIT_FOR_FIRST_READY) {
             gameServerState = GameServerState.WAIT_FOR_SECOND_READY;
-        }
-        else {
+        } else {
             gameServerState = GameServerState.WAIT_FOR_MOVE;
 
             // Random choose of first player
@@ -144,14 +141,14 @@ public final class ConnectionsHandler extends Thread {
         Msg answer;
 
         int activePlayerId = clientMsg.getPlayerID();
-        int waitingPlayerId = (activePlayerId+1)%2;
+        int waitingPlayerId = (activePlayerId + 1) % 2;
         Coordinates coordinates = new Coordinates((Coordinates) clientMsg.getDataObj());
 
         logger.info("ROW: " + coordinates.getRow() + ", COL: " + coordinates.getCol());
         Boolean isHit = playersMaps.get(waitingPlayerId).updateMapWithShot(coordinates);
 
         boolean isLoser = (playersMaps.get(waitingPlayerId).countFields(FieldState.SHIP) == 0);
-        if( isLoser ) {
+        if (isLoser) {
             gameServerState = GameServerState.END;
 
             answer = new Msg(MsgType.WIN, activePlayerId, coordinates);
@@ -164,7 +161,7 @@ public final class ConnectionsHandler extends Thread {
         }
 
         // GameServerState is WAIT_FOR_MOVE and it stays that way
-        if( isHit ) {
+        if (isHit) {
             answer = new Msg(MsgType.HIT_WAIT_FOR_MOVE, activePlayerId, coordinates);
             send(answer);
 

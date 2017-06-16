@@ -1,12 +1,11 @@
 package modeltest;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-
-import model.*;
 import model.Coordinates;
+import model.FieldState;
+import model.Map;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class MapTest {
     @Test
@@ -24,7 +23,7 @@ public class MapTest {
     public void copyConstructorTest() {
         Map original = new Map();
 
-        original.setFieldState(0,0, FieldState.SHIP);
+        original.setFieldState(0, 0, FieldState.SHIP);
         Map copy = new Map(original);
 
         assertEquals(false, original == copy);

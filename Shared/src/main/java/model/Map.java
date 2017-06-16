@@ -48,9 +48,9 @@ public class Map implements Serializable {
 
     public int countFields(FieldState fieldState) {
         int result = 0;
-        for (FieldState[] fsRow: grid) {
-            for (FieldState fs: fsRow) {
-                if( fs == fieldState )
+        for (FieldState[] fsRow : grid) {
+            for (FieldState fs : fsRow) {
+                if (fs == fieldState)
                     ++result;
             }
         }
@@ -63,12 +63,12 @@ public class Map implements Serializable {
         int col = coordinates.getCol();
 
         FieldState fs = getFieldState(row, col);
-        if( fs == FieldState.EMPTY ) {
+        if (fs == FieldState.EMPTY) {
             setFieldState(row, col, FieldState.SHOT);
             return false;
         }
 
-        if( fs == FieldState.SHIP ) {
+        if (fs == FieldState.SHIP) {
             setFieldState(row, col, FieldState.HIT);
             return true;
         }

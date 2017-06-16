@@ -1,9 +1,9 @@
 package modeltest;
 
-import static org.junit.Assert.assertEquals;
-
 import model.Coordinates;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class CoordinatesTest {
     @Test

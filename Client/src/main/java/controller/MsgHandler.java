@@ -25,11 +25,11 @@ public class MsgHandler extends Thread {
         Msg msg;
         try {
             while ((msg = messagesReceived.take()) != null) {
-                Coordinates coordinates = (Coordinates)msg.getDataObj();
+                Coordinates coordinates = (Coordinates) msg.getDataObj();
                 Integer row = (coordinates != null) ? coordinates.getRow() : null;
                 Integer col = (coordinates != null) ? coordinates.getCol() : null;
 
-                switch(msg.getMsgType()) {
+                switch (msg.getMsgType()) {
                     case SET_ID:
                         controller.handleSetId(msg);
                         break;
@@ -62,8 +62,7 @@ public class MsgHandler extends Thread {
                         break;
                 }
             }
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             logger.info("Interruption signal arrived while queue was waiting for message");
         }
     }
