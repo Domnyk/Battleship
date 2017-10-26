@@ -1,22 +1,22 @@
 ## Battleship
 
 ### Opis
-Gra w statki. Dwóch użytkowników i jeden serwer. Komunikacja opartach na socketach. GUI zrealizowane przy pomocy JavaFX. 
+This is Battleship game. Two users connects to one server. Communication is based on sockets. GUI made with JavaFX. 
 
 
-### Organizacja kodu
-1. Client - kod klienta
-2. Server - kod serwera
-3. Shared - współdzielona część kodu, zarówno model jak i protokół komunikacji
+### Code organization
+1. Client - client code
+2. Server - server code
+3. Shared - shared part of code, data model and communication protocol
 
-Projekt został zorganizowany przy użyciu Gradle'a jako "multi-project build"
+Project was created as gradle multi-project build
   
-### Uruchomienie programu
+### How to run
 
-#### Klient
+#### Client
     ./gradlew buildClientJar
     java -jar  ./Client/build/jfx/app/BattleshipClient.jar
 
-#### Serwer
+#### Server
     ./gradlew buildServerJar
     java -jar  ./Server/build/jfx/app/BattleshipServer.jar
