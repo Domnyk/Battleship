@@ -1,6 +1,6 @@
 ## Battleship
 
-### Opis
+### Description
 This is Battleship game. Two users connect to one server. Communication is based on sockets. GUI made with JavaFX. 
 
 
